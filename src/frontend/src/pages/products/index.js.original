@@ -1,0 +1,613 @@
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
+import MainLayout from '../../layouts/MainLayout';
+import ProductCard from '../../components/ProductCard';
+import Link from 'next/link';
+import { FiFilter, FiX, FiChevronDown, FiGrid, FiList, FiPackage, FiTruck, FiCreditCard } from 'react-icons/fi';
+import productService from '../../services/productService';
+
+/**
+ * Page de liste des produits
+ */
+export default function ProductsPage() {
+  const router = useRouter();
+  const { category, search } = router.query;
+  
+  // Référence pour le slider
+  const sliderRef = useRef(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = 3;
+  
+  // États pour les filtres et le tri
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(category || '');
+  const [priceRange, setPriceRange] = useState([0, 10000]);
+  const [onlyOrganic, setOnlyOrganic] = useState(false);
+  const [sortBy, setSortBy] = useState('popularity');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' ou 'list'
+  
+  // Charger les catégories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await productService.getCategories();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Erreur lors du chargement des catégories:', error);
+        // Catégories par défaut en cas d'erreur
+        setCategories([
+          { id: '1', name: 'Fruits', slug: 'fruits', count: 0 },
+          { id: '2', name: 'Légumes', slug: 'legumes', count: 0 },
+          { id: '3', name: 'Produits transformés', slug: 'transformes', count: 0 },
+          { id: '4', name: 'Paniers', slug: 'paniers', count: 0 }
+        ]);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
+  
+  // Charger les produits
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      
+      try {
+        // Préparer les options de filtrage pour l'API
+        const options = {
+          category: selectedCategory,
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+          isOrganic: onlyOrganic,
+          search: search,
+          sort: sortBy
+        };
+        
+        // Récupérer les produits filtrés depuis l'API
+        const productsData = await productService.getAllProducts(options);
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Erreur lors du chargement des produits:', error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, [selectedCategory, search, onlyOrganic, priceRange, sortBy]);
+  
+  // Mettre à jour les filtres et l'URL
+  const updateFilters = (filters) => {
+    const newFilters = { ...filters };
+    
+    // Mettre à jour l'URL
+    const query = {};
+    if (newFilters.category) query.category = newFilters.category;
+    if (search) query.search = search;
+    
+    router.push({
+      pathname: '/products',
+      query
+    }, undefined, { shallow: true });
+    
+    // Mettre à jour l'état
+    if (newFilters.category !== undefined) setSelectedCategory(newFilters.category);
+    if (newFilters.onlyOrganic !== undefined) setOnlyOrganic(newFilters.onlyOrganic);
+    if (newFilters.priceRange) setPriceRange(newFilters.priceRange);
+  };
+  
+  // Réinitialiser tous les filtres
+  const resetFilters = () => {
+    setSelectedCategory('');
+    setOnlyOrganic(false);
+    setPriceRange([0, 10000]);
+    
+    router.push('/products', undefined, { shallow: true });
+  };
+  
+  // Fonction pour changer de slide
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  // Fonction pour passer au slide suivant
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  // Fonction pour passer au slide précédent
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  // Effet pour faire défiler automatiquement les slides
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <MainLayout 
+      title="Produits - SAFEM"
+      description="Découvrez notre gamme de produits frais du Gabon respectant les normes sanitaires."
+    >
+      {/* Slider/Carrousel */}
+      <div className="relative overflow-hidden" style={{ height: '500px' }}>
+        <div 
+          ref={sliderRef}
+          className="flex transition-transform duration-500 ease-in-out h-full"
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        >
+          {/* Slide 1 */}
+          <div className="w-full flex-shrink-0 relative">
+            <div 
+              className="absolute inset-0 bg-center bg-cover" 
+              style={{ 
+                backgroundImage: "url('https://i.imgur.com/Rsb4OXA.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="text-center text-white p-6 max-w-3xl">
+                <h2 className="text-4xl font-bold mb-4">Des produits frais respectant les normes sanitaires</h2>
+                <p className="text-xl mb-6">Découvrez la gamme complète des produits SAFEM directement livrés à votre domicile</p>
+                <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md transition duration-300">
+                  Découvrir nos produits
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Slide 2 */}
+          <div className="w-full flex-shrink-0 relative">
+            <div 
+              className="absolute inset-0 bg-center bg-cover" 
+              style={{ 
+                backgroundImage: "url('https://i.imgur.com/s6FY1eW.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="text-center text-white p-6 max-w-3xl">
+                <h2 className="text-4xl font-bold mb-4">Produits cultivés avec passion</h2>
+                <p className="text-xl mb-6">Au cœur du Gabon, nos produits sont cultivés avec soin pour vous offrir la meilleure qualité</p>
+                <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md transition duration-300">
+                  Voir notre sélection
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Slide 3 */}
+          <div className="w-full flex-shrink-0 relative">
+            <div 
+              className="absolute inset-0 bg-center bg-cover" 
+              style={{ 
+                backgroundImage: "url('https://i.imgur.com/6nluzTc.jpeg')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="text-center text-white p-6 max-w-3xl">
+                <h2 className="text-4xl font-bold mb-4">Livraison directe à domicile</h2>
+                <p className="text-xl mb-6">Du producteur au consommateur, sans intermédiaire pour une fraîcheur garantie</p>
+                <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md transition duration-300">
+                  Commander maintenant
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Contrôles du slider */}
+        <button 
+          onClick={prevSlide} 
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full hover:bg-opacity-75 focus:outline-none"
+          aria-label="Slide précédent"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button 
+          onClick={nextSlide} 
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full hover:bg-opacity-75 focus:outline-none"
+          aria-label="Slide suivant"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        
+        {/* Indicateurs */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+          {Array.from({ length: totalSlides }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full ${currentSlide === index ? 'bg-white' : 'bg-white bg-opacity-50'}`}
+              aria-label={`Aller au slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+      
+      <div className="bg-primary/10 py-10">
+        <div className="container-custom">
+          <h1 className="text-3xl font-heading font-bold text-center">Nos Produits</h1>
+          {selectedCategory && (
+            <p className="text-center mt-2 text-gray-600">
+              Catégorie: <span className="font-medium">{categories.find(c => c.slug === selectedCategory)?.name || selectedCategory}</span>
+            </p>
+          )}
+          {search && (
+            <p className="text-center mt-2 text-gray-600">
+              Recherche: <span className="font-medium">"{search}"</span>
+            </p>
+          )}
+        </div>
+      </div>
+      
+      <div className="container-custom py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar de filtrage - version desktop */}
+          <div className="hidden lg:block w-64 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <h2 className="font-heading font-semibold text-lg mb-4">Filtres</h2>
+              
+              {/* Catégories */}
+              <div className="mb-6">
+                <h3 className="font-medium mb-2">Catégories</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <button 
+                      onClick={() => updateFilters({ category: '' })}
+                      className={`text-left w-full hover:text-primary ${!selectedCategory ? 'font-medium text-primary' : ''}`}
+                    >
+                      Toutes les catégories
+                    </button>
+                  </li>
+                  {categories.map(category => (
+                    <li key={category.id}>
+                      <button 
+                        onClick={() => updateFilters({ category: category.slug })}
+                        className={`text-left w-full hover:text-primary ${selectedCategory === category.slug ? 'font-medium text-primary' : ''}`}
+                      >
+                        {category.name} <span className="text-gray-400 text-sm">({category.count || 0})</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {/* Filtres supplémentaires */}
+              <div className="mb-6">
+                <h3 className="font-medium mb-2">Prix</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <span>{priceRange[0]} XAF</span>
+                  <span>{priceRange[1]} XAF</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="10000"
+                  step="500"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                  className="w-full"
+                />
+              </div>
+              
+              <div className="mb-6">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={onlyOrganic}
+                    onChange={() => setOnlyOrganic(!onlyOrganic)}
+                    className="form-checkbox text-primary h-5 w-5"
+                  />
+                  <span className="ml-2">Produits bio uniquement</span>
+                </label>
+              </div>
+              
+              {/* Bouton de réinitialisation */}
+              <button
+                onClick={resetFilters}
+                className="w-full py-2 px-4 border border-gray-300 rounded-button text-gray-600 hover:bg-gray-50"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          </div>
+          
+          {/* Contenu principal */}
+          <div className="flex-grow">
+            {/* Barre d'outils de filtrage */}
+            <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
+              {/* Bouton de filtre pour mobile */}
+              <button
+                onClick={() => setFilterOpen(!filterOpen)}
+                className="lg:hidden flex items-center bg-white rounded-button shadow-sm px-4 py-2"
+              >
+                <FiFilter className="mr-2" />
+                Filtres
+              </button>
+              
+              {/* Affichage du nombre de résultats */}
+              <div className="text-gray-600">
+                {loading ? 'Chargement...' : `${products.length} produit${products.length > 1 ? 's' : ''}`}
+              </div>
+              
+              {/* Sélecteur de tri */}
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="appearance-none bg-white border border-gray-300 rounded-button pl-4 pr-10 py-2"
+                  >
+                    <option value="popularity">Popularité</option>
+                    <option value="price-asc">Prix: croissant</option>
+                    <option value="price-desc">Prix: décroissant</option>
+                    <option value="name">Nom</option>
+                  </select>
+                  <FiChevronDown className="absolute right-3 top-3 pointer-events-none" />
+                </div>
+                
+                {/* Sélecteur de vue */}
+                <div className="hidden sm:flex items-center bg-white border border-gray-300 rounded-button overflow-hidden">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                    aria-label="Affichage en grille"
+                  >
+                    <FiGrid />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                    aria-label="Affichage en liste"
+                  >
+                    <FiList />
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Modal de filtres pour mobile */}
+            {filterOpen && (
+              <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-white">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <h2 className="font-heading font-semibold text-lg">Filtres</h2>
+                  <button
+                    onClick={() => setFilterOpen(false)}
+                    className="p-2 text-gray-600"
+                    aria-label="Fermer"
+                  >
+                    <FiX size={24} />
+                  </button>
+                </div>
+                
+                <div className="flex-grow overflow-y-auto p-4 space-y-6">
+                  {/* Catégories */}
+                  <div>
+                    <h3 className="font-medium mb-2">Catégories</h3>
+                    <ul className="space-y-3">
+                      <li>
+                        <button 
+                          onClick={() => {
+                            updateFilters({ category: '' });
+                            setFilterOpen(false);
+                          }}
+                          className={`text-left w-full hover:text-primary ${!selectedCategory ? 'font-medium text-primary' : ''}`}
+                        >
+                          Toutes les catégories
+                        </button>
+                      </li>
+                      {categories.map(category => (
+                        <li key={category.id}>
+                          <button 
+                            onClick={() => {
+                              updateFilters({ category: category.slug });
+                              setFilterOpen(false);
+                            }}
+                            className={`text-left w-full hover:text-primary ${selectedCategory === category.slug ? 'font-medium text-primary' : ''}`}
+                          >
+                            {category.name} <span className="text-gray-400 text-sm">({category.count})</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* Prix */}
+                  <div>
+                    <h3 className="font-medium mb-2">Prix</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <span>{priceRange[0]} XAF</span>
+                      <span>{priceRange[1]} XAF</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10000"
+                      step="500"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  {/* Bio */}
+                  <div>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={onlyOrganic}
+                        onChange={() => setOnlyOrganic(!onlyOrganic)}
+                        className="form-checkbox text-primary h-5 w-5"
+                      />
+                      <span className="ml-2">Produits bio uniquement</span>
+                    </label>
+                  </div>
+                </div>
+                
+                <div className="p-4 border-t flex gap-3">
+                  <button
+                    onClick={resetFilters}
+                    className="flex-1 py-2 px-4 border border-gray-300 rounded-button text-gray-600"
+                  >
+                    Réinitialiser
+                  </button>
+                  <button
+                    onClick={() => setFilterOpen(false)}
+                    className="flex-1 py-2 px-4 bg-primary text-white rounded-button"
+                  >
+                    Appliquer
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Affichage des produits */}
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="loading-spinner"></div>
+              </div>
+            ) : products.length === 0 ? (
+              <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                <h3 className="font-heading font-semibold text-lg mb-2">Aucun produit trouvé</h3>
+                <p className="text-gray-600 mb-4">
+                  Aucun produit ne correspond à vos critères de recherche.
+                </p>
+                <button
+                  onClick={resetFilters}
+                  className="btn-primary py-2 px-4"
+                >
+                  Réinitialiser les filtres
+                </button>
+              </div>
+            ) : (
+              <div className={
+                viewMode === 'grid'
+                  ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'
+                  : 'space-y-4'
+              }>
+                {products.map((product) => (
+                  viewMode === 'grid' ? (
+                    <ProductCard key={product.id} product={product} />
+                  ) : (
+                    <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden flex">
+                      {/* À implémenter: vue liste */}
+                      <ProductCard product={product} />
+                    </div>
+                  )
+                ))}
+              </div>
+            )}
+            
+            {/* Section Comment Commander */}
+            <div className="mt-20 bg-white py-16">
+              <div className="container-custom">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-heading font-bold mb-4">Comment Commander</h2>
+                  <p className="text-gray-600 max-w-2xl mx-auto">Nous vous proposons plusieurs façons simples et pratiques de commander nos produits frais. Choisissez celle qui vous convient le mieux.</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Option 1 */}
+                  <div className="bg-gray-50 rounded-lg p-8 text-center shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <FiPackage className="text-primary text-2xl" />
+                    </div>
+                    <h3 className="text-xl font-heading font-semibold mb-3">Commande en ligne</h3>
+                    <p className="text-gray-600 mb-4">Passez votre commande directement sur notre site et recevez vos produits frais livrés chez vous.</p>
+                    <ol className="text-left text-gray-600 mb-6 space-y-2">
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">1</span>
+                        <span>Ajoutez vos produits au panier</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">2</span>
+                        <span>Validez votre commande</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">3</span>
+                        <span>Recevez votre livraison</span>
+                      </li>
+                    </ol>
+                    <button className="btn-primary py-2 px-6 rounded-full">
+                      Commander maintenant
+                    </button>
+                  </div>
+                  
+                  {/* Option 2 */}
+                  <div className="bg-gray-50 rounded-lg p-8 text-center shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <FiTruck className="text-primary text-2xl" />
+                    </div>
+                    <h3 className="text-xl font-heading font-semibold mb-3">Abonnement hebdomadaire</h3>
+                    <p className="text-gray-600 mb-4">Recevez automatiquement chaque semaine votre panier de produits frais sélectionnés.</p>
+                    <ol className="text-left text-gray-600 mb-6 space-y-2">
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">1</span>
+                        <span>Choisissez votre formule d'abonnement</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">2</span>
+                        <span>Personnalisez votre panier</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">3</span>
+                        <span>Recevez votre panier chaque semaine</span>
+                      </li>
+                    </ol>
+                    <button className="btn-primary py-2 px-6 rounded-full">
+                      S'abonner
+                    </button>
+                  </div>
+                  
+                  {/* Option 3 */}
+                  <div className="bg-gray-50 rounded-lg p-8 text-center shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <FiCreditCard className="text-primary text-2xl" />
+                    </div>
+                    <h3 className="text-xl font-heading font-semibold mb-3">Commande par téléphone</h3>
+                    <p className="text-gray-600 mb-4">Appelez-nous directement pour passer votre commande et discuter avec nos conseillers.</p>
+                    <ol className="text-left text-gray-600 mb-6 space-y-2">
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">1</span>
+                        <span>Appelez notre service client</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">2</span>
+                        <span>Passez votre commande personnalisée</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">3</span>
+                        <span>Recevez votre livraison sous 48h</span>
+                      </li>
+                    </ol>
+                    <a href="tel:+24174123456" className="btn-primary py-2 px-6 rounded-full inline-block">
+                      +241 74 12 34 56
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </MainLayout>
+  );
+}
