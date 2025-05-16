@@ -184,6 +184,10 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
       await cartService.addToCart(productData, quantity);
       // Notification de succès
       toast.success(`${productData.name} ajouté au panier`);
+      // Redirection vers la page du panier après un court délai
+      setTimeout(() => {
+        router.push('/cart');
+      }, 500); // Délai de 500ms pour que l'utilisateur puisse voir la notification
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
       toast.error('Erreur lors de l\'ajout au panier. Veuillez réessayer.');
