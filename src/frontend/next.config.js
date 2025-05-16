@@ -13,7 +13,8 @@ const nextConfig = {
       'localhost',
       'xgafzmqqzjzuhbangeff.supabase.co', // Domaine Supabase Storage
       'images.unsplash.com', // Pour les images de test
-      'i.imgur.com' // Pour les images hébergées sur Imgur
+      'i.imgur.com', // Pour les images hébergées sur Imgur
+      'via.placeholder.com' // Pour les images placeholder
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [320, 420, 768, 1024, 1200], // Tailles d'écran optimisées
