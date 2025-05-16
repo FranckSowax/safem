@@ -3,10 +3,11 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
 import MainLayout from '../../layouts/MainLayout';
-import { FiShoppingCart, FiMinus, FiPlus, FiChevronRight, FiStar, FiArrowLeft } from 'react-icons/fi';
+import { FiShoppingCart, FiMinus, FiPlus, FiChevronRight, FiStar, FiArrowLeft, FiCheck } from 'react-icons/fi';
 import { formatPrice } from '../../utils/formatPrice';
 import productService from '../../services/productService';
 import cartService from '../../services/cartService';
+import { toast } from 'react-hot-toast';
 
 /**
  * Page de détail d'un produit
@@ -171,15 +172,23 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
     }
   };
   
+  // État pour gérer l'ajout au panier
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
   // Fonction pour ajouter au panier
   const handleAddToCart = async () => {
+    if (isAddingToCart) return;
+    
+    setIsAddingToCart(true);
     try {
       await cartService.addToCart(productData, quantity);
-      // On pourrait ajouter ici une notification de succès
-      console.log(`Ajouté au panier: ${productData.name}, quantité: ${quantity}`);
+      // Notification de succès
+      toast.success(`${productData.name} ajouté au panier`);
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
-      // On pourrait ajouter ici une notification d'erreur
+      toast.error('Erreur lors de l\'ajout au panier. Veuillez réessayer.');
+    } finally {
+      setIsAddingToCart(false);
     }
   };
   
@@ -208,14 +217,17 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
             {/* Galerie d'images */}
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               {/* Image principale */}
-              <div className="relative h-80 md:h-96 mb-4 rounded-md overflow-hidden">
-                <Image
+              <div className="relative h-72 sm:h-80 md:h-96 mb-4 rounded-md overflow-hidden">
+                <img
                   src={productData.images[mainImage]?.url || 'https://via.placeholder.com/600'}
                   alt={productData.images[mainImage]?.alt_text || productData.name}
-                  fill
-                  className="object-cover"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = '/images/placeholder-product.jpg';
+                    e.target.onerror = null;
+                  }}
                 />
               </div>
               
@@ -230,11 +242,14 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
                         index === mainImage ? 'ring-2 ring-primary' : 'ring-1 ring-gray-200'
                       }`}
                     >
-                      <Image
+                      <img
                         src={image.url}
                         alt={image.alt_text || `${productData.name} - image ${index + 1}`}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = '/images/placeholder-product.jpg';
+                          e.target.onerror = null;
+                        }}
                       />
                     </button>
                   ))}
@@ -243,8 +258,8 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
             </div>
             
             {/* Informations produit */}
-            <div className="p-6 flex flex-col">
-              <h1 className="text-2xl font-heading font-bold mb-2">{productData.name}</h1>
+            <div className="p-4 md:p-6 flex flex-col">
+              <h1 className="text-xl sm:text-2xl font-heading font-bold mb-2">{productData.name}</h1>
               
               {/* Prix */}
               <div className="text-2xl font-bold text-primary mb-4">
@@ -305,17 +320,29 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleAddToCart}
-                    className="btn-primary py-3 px-6 flex-1"
-                    disabled={productData.stock_quantity <= 0}
+                    className="btn-primary py-3 px-6 flex-1 flex items-center justify-center"
+                    disabled={productData.stock_quantity <= 0 || isAddingToCart}
                   >
-                    <FiShoppingCart className="mr-2" />
-                    Ajouter au panier
+                    {isAddingToCart ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Ajout en cours...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiShoppingCart className="mr-2" size={20} />
+                        <span className="font-medium">Ajouter au panier</span>
+                      </>
+                    )}
                   </button>
                   <Link 
                     href="/cart" 
-                    className="btn-secondary py-3 px-6 hidden sm:inline-flex"
+                    className="btn-secondary py-3 px-6 flex items-center justify-center sm:inline-flex"
                   >
-                    Voir le panier
+                    <span className="font-medium">Voir le panier</span>
                   </Link>
                 </div>
               </div>
@@ -328,9 +355,9 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
       <section className="container-custom pb-12">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Navigation des onglets */}
-          <div className="flex border-b">
+          <div className="flex overflow-x-auto border-b scrollbar-hide">
             <button
-              className={`px-6 py-3 font-medium ${
+              className={`px-4 sm:px-6 py-3 font-medium whitespace-nowrap ${
                 activeTab === 'description' 
                   ? 'text-primary border-b-2 border-primary' 
                   : 'text-gray-500 hover:text-primary'
@@ -340,7 +367,7 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
               Description
             </button>
             <button
-              className={`px-6 py-3 font-medium ${
+              className={`px-4 sm:px-6 py-3 font-medium whitespace-nowrap ${
                 activeTab === 'nutrition' 
                   ? 'text-primary border-b-2 border-primary' 
                   : 'text-gray-500 hover:text-primary'
@@ -350,7 +377,7 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
               Informations nutritionnelles
             </button>
             <button
-              className={`px-6 py-3 font-medium ${
+              className={`px-4 sm:px-6 py-3 font-medium whitespace-nowrap ${
                 activeTab === 'storage' 
                   ? 'text-primary border-b-2 border-primary' 
                   : 'text-gray-500 hover:text-primary'
