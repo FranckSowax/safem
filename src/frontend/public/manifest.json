@@ -1,0 +1,46 @@
+{
+  "name": "SAFEM - Produits frais du Gabon",
+  "short_name": "SAFEM",
+  "description": "Une Ferme et plateforme de produits frais, locaux et durables du Gabon.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2E7D32",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "categories": ["shopping", "food", "agriculture"],
+  "screenshots": [],
+  "lang": "fr",
+  "dir": "ltr",
+  "scope": "/",
+  "serviceworker": {
+    "src": "/sw.js"
+  },
+  "shortcuts": [
+    {
+      "name": "Nos produits",
+      "url": "/products",
+      "description": "Découvrez nos produits frais"
+    },
+    {
+      "name": "Mon panier",
+      "url": "/cart",
+      "description": "Voir votre panier d'achats"
+    }
+  ]
+}

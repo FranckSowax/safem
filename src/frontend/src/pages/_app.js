@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import { AuthProvider } from '../contexts/AuthContext';
 import { Toaster } from 'react-hot-toast';
+import Head from 'next/head';
 
 /**
  * Composant principal de l'application Safem
@@ -9,6 +10,26 @@ import { Toaster } from 'react-hot-toast';
 export default function MyApp({ Component, pageProps }) {
   return (
     <AuthProvider>
+      <Head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="SAFEM - Une Ferme et plateforme de produits frais, locaux et durables du Gabon. Notre coopérative agricole promeut des pratiques respectueuses de l'environnement." />
+        <meta name="keywords" content="SAFEM, agriculture, Gabon, produits frais, permaculture, développement durable, maraîchage, Meba, Ntoum" />
+        <meta property="og:title" content="SAFEM - L'excellence agricole au service du développement" />
+        <meta property="og:description" content="Découvrez les produits frais et locaux de notre ferme gabonaise, cultivés selon des normes sanitaires strictes." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://safem.ga" />
+        <meta property="og:image" content="/images/vegetables.jpg" />
+        <link rel="canonical" href="https://safem.ga" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width" />
+        <meta name="theme-color" content="#2E7D32" />
+        <script async src="/register-sw.js"></script>
+        <link rel="manifest" href="/manifest.json" />
+      </Head>
       <Component {...pageProps} />
       <Toaster 
         position="top-right"

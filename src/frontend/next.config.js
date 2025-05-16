@@ -1,17 +1,24 @@
 /**
  * Configuration Next.js pour Safem
+ * Optimisée pour les performances sur connections lentes au Gabon
  */
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  compress: true, // Active la compression gzip pour toutes les ressources
+  poweredByHeader: false, // Supprime l'en-tête X-Powered-By pour la sécurité
   images: {
     domains: [
       'localhost',
-      'xgafzmqqzjzuhbangeff.supabase.co', // Domaine Supabase Storage (à adapter à votre instance)
-      'images.unsplash.com' // Pour les images de développement/test
+      'xgafzmqqzjzuhbangeff.supabase.co', // Domaine Supabase Storage
+      'images.unsplash.com', // Pour les images de test
+      'i.imgur.com' // Pour les images hébergées sur Imgur
     ],
     formats: ['image/avif', 'image/webp'],
+    deviceSizes: [320, 420, 768, 1024, 1200], // Tailles d'écran optimisées
+    imageSizes: [16, 32, 48, 64, 96, 128, 256], // Tailles d'images adaptatives
+    minimumCacheTTL: 86400, // Cache d'un jour pour réduire les téléchargements
   },
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
