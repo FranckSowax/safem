@@ -22,7 +22,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 z-0 overflow-hidden">
           <div 
             style={{ 
-              backgroundImage: "url('/images/banner_notre_histoire.webp')",
+              backgroundImage: "url('/static/banner_notre_histoire.webp')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               position: "absolute",
@@ -101,7 +101,7 @@ export default function AboutPage() {
               <div className="relative" style={{ height: "400px" }}>
                 <div 
                   style={{ 
-                    backgroundImage: "url('/images/notre_histoire1.png')",
+                    backgroundImage: "url('/static/notre_histoire1.png')",
                     backgroundSize: "contain",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
@@ -194,7 +194,7 @@ export default function AboutPage() {
             <div className="absolute inset-0">
               <div 
                 style={{ 
-                  backgroundImage: "url('/images/banner_farmer.jpg')",
+                  backgroundImage: "url('/static/banner_farmer.jpg')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   position: "absolute",
@@ -269,7 +269,7 @@ export default function AboutPage() {
               <div className="relative">
                 <div 
                   style={{ 
-                    backgroundImage: "url('/images/image_histoire4.jpg')",
+                    backgroundImage: "url('/static/image_histoire4.jpg')",
                     backgroundSize: "contain",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
