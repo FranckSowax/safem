@@ -35,19 +35,12 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="card group">
-      {/* Badge pour produit bio ou mis en avant */}
-      {(is_organic || is_featured) && (
-        <div className="absolute top-2 left-2 z-10 flex flex-col gap-2">
-          {is_organic && (
-            <span className="text-xs font-semibold bg-green-100 text-primary px-2 py-1 rounded-full">
-              Bio
-            </span>
-          )}
-          {is_featured && (
-            <span className="text-xs font-semibold bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
-              Populaire
-            </span>
-          )}
+      {/* Badge pour produit mis en avant */}
+      {is_featured && (
+        <div className="absolute top-2 left-2 z-10">
+          <span className="text-xs font-semibold bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
+            Populaire
+          </span>
         </div>
       )}
       

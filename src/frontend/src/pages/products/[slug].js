@@ -217,11 +217,6 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
                   fill
                   className="object-cover"
                 />
-                {productData.is_organic && (
-                  <span className="absolute top-2 left-2 text-xs font-semibold bg-green-100 text-primary px-2 py-1 rounded-full">
-                    Bio
-                  </span>
-                )}
               </div>
               
               {/* Images miniatures */}
