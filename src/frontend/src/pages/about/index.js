@@ -21,10 +21,12 @@ export default function AboutPage() {
       {/* Section Hero avec bannière */}
       <section className="py-20 md:py-28 relative bg-gray-50">
         <div className="absolute inset-0 z-0 overflow-hidden">
-          <img 
+          <Image 
             src="/images/banner_notre_histoire.webp" 
             alt="SAFEM - Notre Histoire" 
-            className="absolute w-full h-full object-cover"
+            layout="fill"
+            objectFit="cover"
+            priority
           />
         </div>
         
@@ -94,11 +96,15 @@ export default function AboutPage() {
             {/* Image de la ferme avec les cultures */}
             <div className="w-full md:w-1/2 rounded-lg overflow-hidden shadow-xl">
               <div className="relative">
-                <img 
-                  src="/images/notre_histoire1.png" 
-                  alt="SAFEM - Cultures durables"
-                  className="w-full object-contain transition-transform duration-700 hover:scale-105"
-                />
+                <div className="relative w-full h-[400px]">
+                  <Image 
+                    src="/images/notre_histoire1.png" 
+                    alt="SAFEM - Cultures durables"
+                    layout="fill"
+                    objectFit="contain"
+                    priority
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -179,11 +185,15 @@ export default function AboutPage() {
           
           {/* Bannière illustrative simple */}
           <div className="relative rounded-xl overflow-hidden h-80 mt-12">
-            <img 
-              src="/images/banner_farmer.jpg" 
-              alt="Une agriculture responsable pour le Gabon"
-              className="absolute w-full h-full object-cover"
-            />
+            <div className="absolute inset-0">
+              <Image 
+                src="/images/banner_farmer.jpg" 
+                alt="Une agriculture responsable pour le Gabon"
+                layout="fill"
+                objectFit="cover"
+                priority
+              />
+            </div>
             <div className="absolute inset-0 z-20 flex items-center justify-center">
               <div className="text-center text-white max-w-xl px-4">
                 <h3 className="text-2xl md:text-3xl font-heading font-bold mb-4 text-white">Une agriculture responsable pour le Gabon</h3>
@@ -247,11 +257,16 @@ export default function AboutPage() {
             {/* Image de l'équipe avec une mise en page circulaire */}
             <div className="w-full md:w-1/2">
               <div className="relative">
-                <img 
-                  src="/images/image_histoire4.jpg" 
-                  alt="L'équipe de la SAFEM"
-                  className="w-full object-contain rounded-lg border-2 border-primary-100"
-                />
+                <div className="relative w-full h-[350px]">
+                  <Image 
+                    src="/images/image_histoire4.jpg" 
+                    alt="L'équipe de la SAFEM"
+                    layout="fill"
+                    objectFit="contain"
+                    className="rounded-lg border-2 border-primary-100"
+                    priority
+                  />
+                </div>
               </div>
             </div>
           </div>
