@@ -328,7 +328,7 @@ export default function CartPage() {
                     <span className="text-gray-600">Frais de livraison</span>
                     <span className="font-medium">{formatPrice(shipping)}</span>
                   </div>
-                  {discount > 0 && (
+                  {discountAmount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Remise</span>
                       <span>-{formatPrice(discountAmount)}</span>
