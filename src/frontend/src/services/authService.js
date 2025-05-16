@@ -9,12 +9,25 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
  */
 const authService = {
   /**
+   * Vérifie si Supabase est disponible
+   * @returns {boolean} - Si Supabase est disponible
+   */
+  isSupabaseAvailable() {
+    return supabase !== null;
+  },
+  
+  /**
    * Inscription d'un nouvel utilisateur
    * @param {Object} userData - Informations de l'utilisateur
    * @returns {Promise<Object>} - Données de la session utilisateur
    */
   async register(userData) {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        throw new Error('Supabase n\'est pas configuré. Impossible de s\'inscrire.');
+      }
+      
       // Inscrire l'utilisateur avec Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email: userData.email,
@@ -68,6 +81,11 @@ const authService = {
    */
   async login(email, password) {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        throw new Error('Supabase n\'est pas configuré. Impossible de se connecter.');
+      }
+      
       // Connecter l'utilisateur avec Supabase Auth
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -112,6 +130,12 @@ const authService = {
    */
   async logout() {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        return;  // Si Supabase n'est pas disponible, rien à déconnecter
+      }
+      
+      // Déconnecter l'utilisateur avec Supabase Auth
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
@@ -126,6 +150,12 @@ const authService = {
    */
   async getCurrentSession() {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        return null;  // Si Supabase n'est pas disponible, aucune session
+      }
+      
+      // Récupérer la session depuis Supabase Auth
       const { data, error } = await supabase.auth.getSession();
       if (error) throw error;
       return data;
@@ -141,6 +171,12 @@ const authService = {
    */
   async getCurrentUser() {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        return null;  // Si Supabase n'est pas disponible, aucun utilisateur
+      }
+      
+      // Récupérer l'utilisateur actuel depuis Supabase Auth
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
       return user;
@@ -157,6 +193,11 @@ const authService = {
    */
   async updateProfile(userData) {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        throw new Error('Supabase n\'est pas configuré. Impossible de mettre à jour le profil.');
+      }
+      
       // D'abord, récupérer l'utilisateur actuel
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
@@ -188,6 +229,11 @@ const authService = {
    */
   async resetPassword(email) {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        throw new Error('Supabase n\'est pas configuré. Impossible de réinitialiser le mot de passe.');
+      }
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`
       });
@@ -206,6 +252,11 @@ const authService = {
    */
   async updatePassword(newPassword) {
     try {
+      // Vérifier si Supabase est disponible
+      if (!this.isSupabaseAvailable()) {
+        throw new Error('Supabase n\'est pas configuré. Impossible de mettre à jour le mot de passe.');
+      }
+      
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });

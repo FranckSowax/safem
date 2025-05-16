@@ -13,21 +13,29 @@ const cartService = {
    */
   async getCart() {
     try {
-      // Vérifier si l'utilisateur est connecté
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // Si l'utilisateur est connecté, récupérer son panier depuis l'API
-        const response = await axios.get(`${API_URL}/cart`, {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`
+      // Vérifier si Supabase est disponible et si l'utilisateur est connecté
+      if (supabase) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          
+          if (session) {
+            // Si l'utilisateur est connecté, récupérer son panier depuis l'API
+            const response = await axios.get(`${API_URL}/cart`, {
+              headers: {
+                Authorization: `Bearer ${session.access_token}`
+              }
+            });
+            return response.data.data;
           }
-        });
-        return response.data.data;
-      } else {
-        // Si l'utilisateur n'est pas connecté, récupérer le panier depuis le localStorage
-        return this.getLocalCart();
+        } catch (authError) {
+          console.error('Erreur d\'authentification:', authError);
+          // Continuez vers le panier local si l'authentification échoue
+        }
       }
+      
+      // Si Supabase n'est pas disponible ou l'utilisateur n'est pas connecté,
+      // récupérer le panier depuis le localStorage
+      return this.getLocalCart();
     } catch (error) {
       console.error('Erreur lors de la récupération du panier:', error);
       // En cas d'erreur, utiliser le panier local
