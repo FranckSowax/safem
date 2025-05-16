@@ -51,7 +51,7 @@ export default function ContactPage() {
         <div className="absolute inset-0 z-0 overflow-hidden">
           <div 
             style={{ 
-              backgroundImage: "url('/images/banner contact.jpg')",
+              backgroundImage: "url('/static/banner_contact.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               position: "absolute",
