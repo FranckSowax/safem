@@ -38,63 +38,60 @@ const mockProducts = [
   },
   {
     id: 4,
-    name: 'Bananes plantains',
-    slug: 'bananes-plantains',
+    name: 'Pastèques',
+    slug: 'pasteques',
     price: 2000,
-    description: 'Bananes plantains de qualité, idéales pour les plats traditionnels',
-    images: [{ publicUrl: '/images/pasteque.webp' }], // Utilisation de l'image pasteque en remplacement
+    description: 'Pastèques fraîches et sucrées, cultivées à Meba',
+    images: [{ publicUrl: '/images/pasteque.webp' }],
     category: 'fruits',
     is_organic: true,
   },
   {
     id: 5,
-    name: 'Ananas',
-    slug: 'ananas',
+    name: 'Oignons',
+    slug: 'oignons',
     price: 3500,
-    description: 'Ananas frais et sucrés, cultivés au Gabon',
-    images: [{ publicUrl: '/images/PHOTO-2025-05-13-22-31-38.jpg' }], // Utilisation d'une photo
-    category: 'fruits',
+    description: 'Oignons frais de qualité supérieure, cultivés à Meba sur la route de Cocobeach',
+    images: [{ publicUrl: '/images/oignons.webp' }],
+    category: 'legumes',
     is_organic: true,
   },
   {
     id: 6,
-    name: 'Manioc',
-    slug: 'manioc',
+    name: 'Carottes',
+    slug: 'carottes',
     price: 1500,
-    description: 'Manioc frais de première qualité',
-    images: [{ publicUrl: '/images/carotte.webp' }], // Utilisation de l'image carotte en remplacement
-    category: 'tubercules',
-    is_organic: false,
+    description: 'Carottes fraîches et croquantes, cultivées selon des principes de permaculture à Meba',
+    images: [{ publicUrl: '/images/carotte.webp' }],
+    category: 'legumes',
+    is_organic: true,
   },
   {
     id: 7,
-    name: 'Jus de fruits locaux',
-    slug: 'jus-de-fruits',
+    name: 'Aubergines',
+    slug: 'aubergines',
     price: 4000,
-    description: 'Jus de fruits pressés, sans conservateurs',
-    images: [{ publicUrl: '/images/PHOTO-2025-05-13-22-31-37-2.jpg' }], // Utilisation d'une photo
-    category: 'transformes',
+    description: 'Aubergines fraîches et fermes, cultivées dans notre ferme à Meba sans pesticides',
+    images: [{ publicUrl: '/images/aubergine.webp' }],
+    category: 'legumes',
     is_organic: true,
   },
   {
     id: 8,
-    name: 'Panier découverte',
-    slug: 'panier-decouverte',
-    price: 10000,
-    description: 'Assortiment de fruits et légumes frais de saison',
-    images: [{ publicUrl: '/images/vegetables.jpg' }], // Utilisation de l'image vegetables
-    category: 'paniers',
-    is_organic: false,
+    name: 'Oseille',
+    slug: 'oseille',
+    price: 1800,
+    description: 'Oseille fraîche et savoureuse, cultivée à Meba selon des pratiques durables',
+    images: [{ publicUrl: '/images/oseille.webp' }],
+    category: 'legumes',
+    is_organic: true,
   }
 ];
 
 // Données fictives pour les catégories en cas d'échec des API
 const mockCategories = [
-  { id: '1', name: 'Fruits', slug: 'fruits', count: 2 },
-  { id: '2', name: 'Légumes', slug: 'legumes', count: 3 },
-  { id: '3', name: 'Produits transformés', slug: 'transformes', count: 1 },
-  { id: '4', name: 'Paniers', slug: 'paniers', count: 1 },
-  { id: '5', name: 'Tubercules', slug: 'tubercules', count: 1 }
+  { id: '1', name: 'Fruits', slug: 'fruits', count: 1 },
+  { id: '2', name: 'Légumes', slug: 'legumes', count: 7 }
 ];
 
 /**
