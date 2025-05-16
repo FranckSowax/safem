@@ -33,8 +33,24 @@ const ProductCard = ({ product }) => {
     ? images[0].alt_text
     : `Image de ${name}`;
 
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    if (isAddingToCart) return;
+    
+    setIsAddingToCart(true);
+    try {
+      await cartService.addToCart(product, 1);
+      toast.success(`${name} ajouté au panier`);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout au panier:', error);
+      toast.error('Erreur lors de l\'ajout au panier. Veuillez réessayer.');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   return (
-    <div className="card group">
+    <div className="card group bg-white shadow-sm hover:shadow-md rounded-lg overflow-hidden transition-all duration-300">
       {/* Badge pour produit mis en avant */}
       {is_featured && (
         <div className="absolute top-2 left-2 z-10">
@@ -44,59 +60,45 @@ const ProductCard = ({ product }) => {
         </div>
       )}
       
-      {/* Image du produit avec effet de zoom au survol */}
-      <div className="relative h-48 overflow-hidden">
-        <Link href={`/products/${slug}`}>
-          <div className="w-full h-full transition-transform duration-300 group-hover:scale-105">
-            <div className="relative w-full h-full">
-              <img 
-                src={imageUrl} 
-                alt={imageAlt} 
-                className="object-cover w-full h-full"
-                loading="lazy"
-              />
-            </div>
-          </div>
-        </Link>
-      </div>
+      {/* Image du produit avec proportion fixe */}
+      <Link href={`/products/${slug}`} className="block relative overflow-hidden group-hover:opacity-90 transition-opacity">
+        <div className="relative pt-[100%] w-full"> {/* Ratio 1:1 */}
+          <img 
+            src={imageUrl} 
+            alt={imageAlt} 
+            className="absolute top-0 left-0 object-cover w-full h-full"
+          />
+        </div>
+      </Link>
       
-      {/* Informations sur le produit */}
+      {/* Informations du produit */}
       <div className="p-4">
-        <Link href={`/products/${slug}`} className="block">
-          <h3 className="font-heading font-medium text-lg mb-1 hover:text-primary transition-colors">
-            {name}
-          </h3>
+        <Link href={`/products/${slug}`} className="block no-underline">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-2 min-h-[2.5rem]">{name}</h3>
         </Link>
         
-        <p className="text-text-light text-sm mb-2 line-clamp-2">
-          {short_description || 'Produit frais de qualité premium, cultivé localement au Gabon.'}
-        </p>
-        
-        <div className="flex items-center justify-between mt-3">
-          <span className="font-semibold text-lg">{formatPrice(price)}</span>
-          
+        <div className="flex justify-between items-center mt-3">
+          <span className="text-base sm:text-lg font-bold text-primary">{formatPrice(price)}</span>
           <button 
-            className="btn-primary py-1.5 px-3 flex items-center justify-center"
-            aria-label={`Ajouter ${name} au panier`}
+            onClick={handleAddToCart} 
+            className="inline-flex items-center justify-center px-3 py-2 bg-primary text-white rounded-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-opacity-50 transition-colors text-sm"
             disabled={isAddingToCart}
-            onClick={async (e) => {
-              e.preventDefault();
-              if (isAddingToCart) return;
-              
-              setIsAddingToCart(true);
-              try {
-                await cartService.addToCart(product, 1);
-                toast.success(`${name} ajouté au panier`);
-              } catch (error) {
-                console.error('Erreur lors de l\'ajout au panier:', error);
-                toast.error('Erreur lors de l\'ajout au panier. Veuillez réessayer.');
-              } finally {
-                setIsAddingToCart(false);
-              }
-            }}
+            aria-label="Ajouter au panier"
           >
-            <FiShoppingCart className="mr-1" />
-            <span>{isAddingToCart ? 'Ajout...' : 'Acheter'}</span>
+            {isAddingToCart ? (
+              <>
+                <svg className="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Ajout...</span>
+              </>
+            ) : (
+              <>
+                <FiShoppingCart size={16} className="mr-1" />
+                <span>Acheter</span>
+              </>
+            )}
           </button>
         </div>
       </div>
