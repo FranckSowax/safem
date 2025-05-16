@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Header from '../components/Header';
 
 // Attendre que le client soit chargé avant d'afficher le contenu pour éviter les erreurs d'hydration
 function ClientOnly({ children, ...delegated }) {
@@ -197,34 +198,8 @@ export default function HomePage() {
       </Head>
       
       <ClientOnly>
-        {/* Header */}
-        <header style={{ backgroundColor: '#fff', borderBottom: '1px solid #eaeaea', padding: '1rem 0' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <a href="/">
-              <img 
-                src="/images/safem-logo.png" 
-                alt="SAFEM Logo" 
-                style={{ height: '80px', width: 'auto' }}
-              />
-            </a>
-            <nav>
-              <ul style={{ display: 'flex', gap: '1.5rem', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center' }}>
-                <li><a href="/" style={{ color: '#2E7D32', textDecoration: 'none' }}>Accueil</a></li>
-                <li><a href="/products" style={{ color: '#333', textDecoration: 'none' }}>Produits</a></li>
-                <li><a href="/about" style={{ color: '#333', textDecoration: 'none' }}>Notre Histoire</a></li>
-                <li><a href="/contact" style={{ color: '#333', textDecoration: 'none' }}>Contact</a></li>
-                <li>
-                  <a href="/cart" style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', padding: '0.5rem', color: '#333', textDecoration: 'none' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span style={{ position: 'absolute', top: '0', right: '0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '16px', height: '16px', backgroundColor: '#2E7D32', color: 'white', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '9999px', transform: 'translate(50%, -25%)' }}>0</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </header>
+        {/* Header avec menu accordéon sur mobile */}
+        <Header />
 
       <main>
         {/* Hero Section */}
@@ -642,7 +617,7 @@ export default function HomePage() {
               <span style={{ display: 'inline-block', padding: '0.5rem 1rem', backgroundColor: '#f0f7f0', borderRadius: '2rem', color: '#2E7D32', fontSize: '0.9rem', fontWeight: 'bold' }}>Notre philosophie</span>
               <h2 style={{ fontSize: '2.2rem', fontWeight: 'bold', marginTop: '1rem' }}>Nos valeurs</h2>
               <p style={{ maxWidth: '700px', margin: '1rem auto 0', color: '#666', fontSize: '1.1rem' }}>
-                Les quatre piliers qui guident nos actions et façonnent notre vision de l'agriculture gabonaise
+                Les quatre piliers qui guident nos actions et façonnent notre vision de l'agriculture durable au Gabon, inspirée des principes de permaculture et d'agroécologie
               </p>
             </div>
             
@@ -759,7 +734,7 @@ export default function HomePage() {
                   </div>
                   <h3 style={{ fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem', color: '#66BB6A' }}>DURABILITÉ</h3>
                   <p style={{ color: '#555', lineHeight: '1.6', fontSize: '1rem' }}>
-                    Nous préservons les ressources naturelles et la biodiversité gabonaise exceptionnelle en adoptant des pratiques responsables et respectueuses de notre écosystème.
+                    Nous appliquons les principes de permaculture et d'agroécologie pour préserver les ressources naturelles du Gabon. Notre ferme à Meba pratique une agriculture à taux de rémanence réduit, garantissant le respect de la biodiversité et des écosystèmes locaux.
                   </p>
                 </div>
               </div>
