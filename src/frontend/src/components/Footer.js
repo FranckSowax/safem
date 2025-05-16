@@ -55,8 +55,8 @@ const Footer = () => {
                 <span>contact@safem.ga</span>
               </li>
             </ul>
-            <div className="mt-4 bg-primary-700 rounded-md p-2 text-center text-sm">
-              <p>Visite de la ferme sur rendez-vous</p>
+            <div className="mt-4 bg-white rounded-md p-2 text-center text-sm">
+              <p className="text-black font-medium">Visite de la ferme sur rendez-vous</p>
             </div>
           </div>
 
@@ -68,10 +68,6 @@ const Footer = () => {
               <FooterLink href="/about">Notre histoire</FooterLink>
               <FooterLink href="/subscription-plans">Abonnements</FooterLink>
               <FooterLink href="/events">Événements à la ferme</FooterLink>
-              <FooterLink href="/blog">Blog</FooterLink>
-              <FooterLink href="/faq">FAQ</FooterLink>
-              <FooterLink href="/terms">Conditions générales</FooterLink>
-              <FooterLink href="/privacy">Politique de confidentialité</FooterLink>
             </ul>
           </div>
 
@@ -90,10 +86,6 @@ const Footer = () => {
       <div className="bg-primary-900 py-4">
         <div className="container-custom text-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} SAFEM. Tous droits réservés.</p>
-          <p className="mt-1">
-            <Link href="/terms" className="hover:text-white mr-4">Conditions générales</Link>
-            <Link href="/privacy" className="hover:text-white">Politique de confidentialité</Link>
-          </p>
         </div>
       </div>
       </div>
