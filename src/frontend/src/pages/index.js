@@ -923,7 +923,7 @@ export default function HomePage() {
                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
               }}>
                 <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d147674.868820343!2d9.653857511265034!3d0.4415419962340209!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2sfr!4v1747182805512!5m2!1sfr!2sfr" 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d64502.389840468095!2d9.726788060400507!3d0.4372064426224455!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x107f0f8cef905057%3A0x58b30038aae2c488!2sMeba%2C%20Gabon!5e0!3m2!1sfr!2sfr!4v1747396142678!5m2!1sfr!2sfr" 
                   width="100%" 
                   height="100%" 
                   style={{border:0}} 
@@ -940,8 +940,8 @@ export default function HomePage() {
                 <div style={{ marginBottom: '1.5rem' }}>
                   <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Adresse</h4>
                   <p style={{ fontSize: '1rem', color: '#555', lineHeight: '1.6' }}>
-                    Route de Kango, PK 47<br />
-                    Libreville, Gabon
+                    Meba - Route de Cocobeach,<br />
+                    à 9 Km de Ntoum, Gabon
                   </p>
                 </div>
                 

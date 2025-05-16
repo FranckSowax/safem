@@ -7,17 +7,27 @@ import NewsletterForm from './NewsletterForm';
  */
 const Footer = () => {
   return (
-    <footer className="bg-primary-800 text-white">
+    <footer className="text-white relative" style={{
+      backgroundImage: "url('/images/footer banner .jpeg')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      position: "relative",
+    }}>
+      {/* Overlay vert transparent */}
+      <div className="absolute top-0 left-0 w-full h-full bg-primary-800 bg-opacity-85"></div>
+      
+      {/* Contenu du footer avec position relative pour s'afficher au-dessus de l'overlay */}
+      <div className="relative z-10">
       {/* Section principale du footer */}
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo et courte description */}
           <div>
             <Link href="/" className="flex items-center mb-4">
-              <span className="font-heading font-bold text-xl">SAFEM Organic</span>
+              <span className="font-heading font-bold text-xl">SAFEM</span>
             </Link>
             <p className="text-gray-300 mb-4">
-              La plateforme des produits frais, locaux et durables du Gabon.
+              Une Ferme et une plateforme de produits frais, locaux et durables du Gabon.
               Notre coopérative agricole promeut des pratiques respectueuses de l'environnement.
             </p>
             {/* Réseaux sociaux */}
@@ -34,7 +44,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <FiMapPin className="mr-2 mt-1 text-primary-300" />
-                <span>Route de Kango, Km 15<br />Estuaire, Gabon</span>
+                <span>Meba - Route de Cocobeach,<br />à 9 Km de Ntoum, Gabon</span>
               </li>
               <li className="flex items-center">
                 <FiPhone className="mr-2 text-primary-300" />
@@ -85,6 +95,7 @@ const Footer = () => {
             <Link href="/privacy" className="hover:text-white">Politique de confidentialité</Link>
           </p>
         </div>
+      </div>
       </div>
     </footer>
   );
