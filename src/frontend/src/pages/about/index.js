@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import MainLayout from '../../layouts/MainLayout';
 import { FiArrowRight, FiBriefcase, FiHeart, FiTrendingUp, FiGlobe } from 'react-icons/fi';
-import '../../styles/about.css';
 
 /**
  * Page Notre Histoire présentant la SAFEM

@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import '../styles/about.css';
 import { AuthProvider } from '../contexts/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
