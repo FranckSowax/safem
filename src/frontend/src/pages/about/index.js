@@ -20,11 +20,17 @@ export default function AboutPage() {
       {/* Section Hero avec bannière */}
       <section className="py-20 md:py-28 relative bg-gray-50">
         <div className="absolute inset-0 z-0 overflow-hidden">
-          <img 
-            src="/images/banner_notre_histoire.webp" 
-            alt="SAFEM - Notre Histoire" 
-            className="absolute w-full h-full object-cover"
-          />
+          <div 
+            style={{ 
+              backgroundImage: "url('/images/banner_notre_histoire.webp')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              position: "absolute",
+              width: "100%",
+              height: "100%"
+            }}
+            aria-label="SAFEM - Notre Histoire"
+          ></div>
         </div>
         
         <div className="container-custom relative z-10">
@@ -92,12 +98,19 @@ export default function AboutPage() {
             
             {/* Image de la ferme avec les cultures */}
             <div className="w-full md:w-1/2 rounded-lg overflow-hidden shadow-xl">
-              <div className="relative">
-                <img 
-                  src="/images/notre_histoire1.png" 
-                  alt="SAFEM - Cultures durables"
-                  className="w-full h-auto max-h-[400px] object-contain"
-                />
+              <div className="relative" style={{ height: "400px" }}>
+                <div 
+                  style={{ 
+                    backgroundImage: "url('/images/notre_histoire1.png')",
+                    backgroundSize: "contain",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%"
+                  }}
+                  aria-label="SAFEM - Cultures durables"
+                ></div>
               </div>
             </div>
           </div>
@@ -179,11 +192,17 @@ export default function AboutPage() {
           {/* Bannière illustrative simple */}
           <div className="relative rounded-xl overflow-hidden h-80 mt-12">
             <div className="absolute inset-0">
-              <img 
-                src="/images/banner_farmer.jpg" 
-                alt="Une agriculture responsable pour le Gabon"
-                className="absolute w-full h-full object-cover"
-              />
+              <div 
+                style={{ 
+                  backgroundImage: "url('/images/banner_farmer.jpg')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%"
+                }}
+                aria-label="Une agriculture responsable pour le Gabon"
+              ></div>
             </div>
             <div className="absolute inset-0 z-20 flex items-center justify-center">
               <div className="text-center text-white max-w-xl px-4">
@@ -248,11 +267,19 @@ export default function AboutPage() {
             {/* Image de l'équipe avec une mise en page circulaire */}
             <div className="w-full md:w-1/2">
               <div className="relative">
-                <img 
-                  src="/images/image_histoire4.jpg" 
-                  alt="L'équipe de la SAFEM"
-                  className="w-full h-auto max-h-[350px] object-contain rounded-lg border-2 border-primary-100"
-                />
+                <div 
+                  style={{ 
+                    backgroundImage: "url('/images/image_histoire4.jpg')",
+                    backgroundSize: "contain",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    height: "350px",
+                    width: "100%",
+                    borderRadius: "0.5rem",
+                    border: "2px solid #e1f5fe"
+                  }}
+                  aria-label="L'équipe de la SAFEM"
+                ></div>
               </div>
             </div>
           </div>
