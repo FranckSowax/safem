@@ -1,14 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import MainLayout from '../../layouts/MainLayout';
 import { FiArrowRight, FiBriefcase, FiHeart, FiTrendingUp, FiGlobe } from 'react-icons/fi';
-
-// Import direct des images pour s'assurer qu'elles sont incluses dans le bundle
-import bannerNotreHistoire from '../../../public/images/banner_notre_histoire.webp';
-import notreHistoire1 from '../../../public/images/notre_histoire1.png';
-import bannerFarmer from '../../../public/images/banner_farmer.jpg';
-import imageHistoire4 from '../../../public/images/image_histoire4.jpg';
 
 /**
  * Page Notre Histoire présentant la SAFEM
@@ -27,7 +21,7 @@ export default function AboutPage() {
       <section className="py-20 md:py-28 relative bg-gray-50">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img 
-            src={bannerNotreHistoire.src} 
+            src="/images/banner_notre_histoire.webp" 
             alt="SAFEM - Notre Histoire" 
             className="absolute w-full h-full object-cover"
           />
@@ -100,7 +94,7 @@ export default function AboutPage() {
             <div className="w-full md:w-1/2 rounded-lg overflow-hidden shadow-xl">
               <div className="relative">
                 <img 
-                  src={notreHistoire1.src} 
+                  src="/images/notre_histoire1.png" 
                   alt="SAFEM - Cultures durables"
                   className="w-full h-auto max-h-[400px] object-contain"
                 />
@@ -186,7 +180,7 @@ export default function AboutPage() {
           <div className="relative rounded-xl overflow-hidden h-80 mt-12">
             <div className="absolute inset-0">
               <img 
-                src={bannerFarmer.src} 
+                src="/images/banner_farmer.jpg" 
                 alt="Une agriculture responsable pour le Gabon"
                 className="absolute w-full h-full object-cover"
               />
@@ -255,7 +249,7 @@ export default function AboutPage() {
             <div className="w-full md:w-1/2">
               <div className="relative">
                 <img 
-                  src={imageHistoire4.src} 
+                  src="/images/image_histoire4.jpg" 
                   alt="L'équipe de la SAFEM"
                   className="w-full h-auto max-h-[350px] object-contain rounded-lg border-2 border-primary-100"
                 />
