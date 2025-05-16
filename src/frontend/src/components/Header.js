@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { FiMenu, FiX, FiShoppingCart, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 /**
@@ -8,8 +9,14 @@ import { FiMenu, FiX, FiShoppingCart, FiChevronDown, FiChevronUp } from 'react-i
  * Header unifié pour toutes les pages avec menu accordéon sur mobile
  */
 const Header = () => {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  
+  // Fonction pour déterminer si un lien est actif
+  const isActive = (path) => {
+    return router.pathname === path;
+  };
   
   // Fonction de bascule du menu sur mobile
   const toggleMenu = () => {
@@ -36,16 +43,16 @@ const Header = () => {
           <nav className="hidden md:block">
             <ul className="flex gap-6 list-none m-0 p-0 items-center">
               <li>
-                <Link href="/" className="text-[#2E7D32] hover:text-green-700 font-medium no-underline">Accueil</Link>
+                <Link href="/" className={`${isActive('/') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] font-medium no-underline`}>Accueil</Link>
               </li>
               <li>
-                <Link href="/products" className="text-gray-800 hover:text-[#2E7D32] no-underline">Produits</Link>
+                <Link href="/products" className={`${isActive('/products') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] no-underline`}>Produits</Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-800 hover:text-[#2E7D32] no-underline">Notre Histoire</Link>
+                <Link href="/about" className={`${isActive('/about') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] no-underline`}>Notre Histoire</Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-800 hover:text-[#2E7D32] no-underline">Contact</Link>
+                <Link href="/contact" className={`${isActive('/contact') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] no-underline`}>Contact</Link>
               </li>
               <li>
                 <Link href="/cart" className="relative inline-flex items-center p-2 text-gray-800 hover:text-[#2E7D32] no-underline">
@@ -83,7 +90,7 @@ const Header = () => {
                 <li className="border-b border-gray-100 pb-3">
                   <Link 
                     href="/" 
-                    className="text-gray-800 hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline"
+                    className={`${isActive('/') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline`}
                     onClick={toggleMenu}
                   >
                     Accueil
@@ -92,7 +99,7 @@ const Header = () => {
                 <li className="border-b border-gray-100 pb-3">
                   <Link 
                     href="/products" 
-                    className="text-gray-800 hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline"
+                    className={`${isActive('/products') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline`}
                     onClick={toggleMenu}
                   >
                     Produits
@@ -101,7 +108,7 @@ const Header = () => {
                 <li className="border-b border-gray-100 pb-3">
                   <Link 
                     href="/about" 
-                    className="text-gray-800 hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline"
+                    className={`${isActive('/about') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline`}
                     onClick={toggleMenu}
                   >
                     Notre Histoire
@@ -110,7 +117,7 @@ const Header = () => {
                 <li className="border-b border-gray-100 pb-3">
                   <Link 
                     href="/contact" 
-                    className="text-gray-800 hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline"
+                    className={`${isActive('/contact') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline`}
                     onClick={toggleMenu}
                   >
                     Contact
