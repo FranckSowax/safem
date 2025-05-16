@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import Image from 'next/image';
 import MainLayout from '../../layouts/MainLayout';
 import { FiArrowRight, FiBriefcase, FiHeart, FiTrendingUp, FiGlobe } from 'react-icons/fi';
+
+// Import direct des images pour s'assurer qu'elles sont incluses dans le bundle
+import bannerNotreHistoire from '../../../public/images/banner_notre_histoire.webp';
+import notreHistoire1 from '../../../public/images/notre_histoire1.png';
+import bannerFarmer from '../../../public/images/banner_farmer.jpg';
+import imageHistoire4 from '../../../public/images/image_histoire4.jpg';
 
 /**
  * Page Notre Histoire présentant la SAFEM
@@ -21,12 +26,10 @@ export default function AboutPage() {
       {/* Section Hero avec bannière */}
       <section className="py-20 md:py-28 relative bg-gray-50">
         <div className="absolute inset-0 z-0 overflow-hidden">
-          <Image 
-            src="/images/banner_notre_histoire.webp" 
+          <img 
+            src={bannerNotreHistoire.src} 
             alt="SAFEM - Notre Histoire" 
-            layout="fill"
-            objectFit="cover"
-            priority
+            className="absolute w-full h-full object-cover"
           />
         </div>
         
@@ -96,15 +99,11 @@ export default function AboutPage() {
             {/* Image de la ferme avec les cultures */}
             <div className="w-full md:w-1/2 rounded-lg overflow-hidden shadow-xl">
               <div className="relative">
-                <div className="relative w-full h-[400px]">
-                  <Image 
-                    src="/images/notre_histoire1.png" 
-                    alt="SAFEM - Cultures durables"
-                    layout="fill"
-                    objectFit="contain"
-                    priority
-                  />
-                </div>
+                <img 
+                  src={notreHistoire1.src} 
+                  alt="SAFEM - Cultures durables"
+                  className="w-full h-auto max-h-[400px] object-contain"
+                />
               </div>
             </div>
           </div>
@@ -186,12 +185,10 @@ export default function AboutPage() {
           {/* Bannière illustrative simple */}
           <div className="relative rounded-xl overflow-hidden h-80 mt-12">
             <div className="absolute inset-0">
-              <Image 
-                src="/images/banner_farmer.jpg" 
+              <img 
+                src={bannerFarmer.src} 
                 alt="Une agriculture responsable pour le Gabon"
-                layout="fill"
-                objectFit="cover"
-                priority
+                className="absolute w-full h-full object-cover"
               />
             </div>
             <div className="absolute inset-0 z-20 flex items-center justify-center">
@@ -257,16 +254,11 @@ export default function AboutPage() {
             {/* Image de l'équipe avec une mise en page circulaire */}
             <div className="w-full md:w-1/2">
               <div className="relative">
-                <div className="relative w-full h-[350px]">
-                  <Image 
-                    src="/images/image_histoire4.jpg" 
-                    alt="L'équipe de la SAFEM"
-                    layout="fill"
-                    objectFit="contain"
-                    className="rounded-lg border-2 border-primary-100"
-                    priority
-                  />
-                </div>
+                <img 
+                  src={imageHistoire4.src} 
+                  alt="L'équipe de la SAFEM"
+                  className="w-full h-auto max-h-[350px] object-contain rounded-lg border-2 border-primary-100"
+                />
               </div>
             </div>
           </div>
