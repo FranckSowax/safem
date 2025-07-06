@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import des polices Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Styles de base */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-text font-sans;
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+  
+  h1 {
+    @apply text-h1 font-bold mb-4;
+  }
+  
+  h2 {
+    @apply text-h2 font-semibold mb-3;
+  }
+  
+  h3 {
+    @apply text-h3 font-medium mb-2;
+  }
+}
+
+/* Composants personnalisés */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-button font-medium transition-colors;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-700;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-white text-primary border border-primary hover:bg-gray-50;
+  }
+  
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .card {
+    @apply bg-white rounded-card shadow-card overflow-hidden;
+  }
+  
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+  
+  .product-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+}
+
+/* Utilitaires personnalisés */
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .transition-standard {
+    @apply transition-all duration-300 ease-in-out;
+  }
+}
+
+/* Animation de chargement */
+.loading-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 0.25rem solid rgba(46, 125, 50, 0.3);
+  border-radius: 50%;
+  border-top-color: #2E7D32;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Styles pour les notifications toast */
+.toast {
+  @apply fixed bottom-4 right-4 z-50 p-4 rounded-md shadow-elevated;
+}
+
+.toast-success {
+  @apply bg-green-100 text-green-800 border-l-4 border-green-500;
+}
+
+.toast-error {
+  @apply bg-red-100 text-red-800 border-l-4 border-red-500;
+}
+
+/* Accessibilité : focus visible mais esthétique */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-opacity-50;
+}

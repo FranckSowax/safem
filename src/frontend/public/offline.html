@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAFEM - Mode Hors Ligne</title>
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --accent-color: #66BB6A;
+            --text-color: #333333;
+            --light-bg: #f9f9f9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        header {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .message {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .tips {
+            background-color: rgba(46, 125, 50, 0.1);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .retry-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .retry-btn:hover {
+            background-color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">SAFEM</div>
+            <p>L'excellence agricole au service du développement</p>
+        </header>
+        
+        <div class="message">
+            <h1>Vous êtes actuellement hors ligne</h1>
+            <p>Il semble que votre connexion Internet soit limitée ou indisponible. Certaines fonctionnalités du site SAFEM pourraient ne pas être disponibles.</p>
+            
+            <p>Si vous avez visité cette page auparavant, il est possible que certains contenus soient disponibles en mode hors ligne.</p>
+            
+            <button class="retry-btn" onclick="window.location.reload()">Réessayer</button>
+        </div>
+        
+        <div class="tips">
+            <h2>Conseils pour une meilleure expérience:</h2>
+            <ul>
+                <li>Vérifiez votre connexion Internet</li>
+                <li>Si la connexion est instable, essayez de vous rapprocher de votre point d'accès</li>
+                <li>Réduisez les applications qui utilisent votre bande passante</li>
+            </ul>
+            <p>Notre site est optimisé pour fonctionner même avec des connexions Internet limitées, typiques dans certaines régions du Gabon.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Vérifier périodiquement si la connexion est rétablie
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+        
+        // Stocker la page d'origine pour y retourner quand on sera en ligne
+        if (!sessionStorage.getItem('offlineFallbackPage')) {
+            sessionStorage.setItem('offlineFallbackPage', document.referrer);
+        }
+        
+        document.querySelector('.retry-btn').addEventListener('click', () => {
+            const fallbackPage = sessionStorage.getItem('offlineFallbackPage') || '/';
+            window.location.href = fallbackPage;
+        });
+    </script>
+</body>
+</html>
