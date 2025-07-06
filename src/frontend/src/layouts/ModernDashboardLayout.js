@@ -179,7 +179,7 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
                   onClick={toggleMobileMenu}
                   className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 mr-3"
                 >
-                  <Bars3Icon className="h-6 w-6" />
+                  <MenuIcon className="h-6 w-6" />
                 </button>
                 
                 <div>
@@ -214,11 +214,7 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
                   <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                 </button>
 
-                {/* Add Button - Responsive */}
-                <button className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                  <span className="mr-1 sm:mr-2">+</span>
-                  <span className="hidden sm:inline">Nouveau</span>
-                </button>
+
               </div>
             </div>
           </div>

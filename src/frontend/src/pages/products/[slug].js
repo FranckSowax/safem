@@ -498,66 +498,25 @@ export default function ProductDetailPage({ product, relatedProducts = [] }) {
  * Récupération des données au moment de la construction (SSG)
  */
 export async function getStaticProps({ params }) {
-  try {
-    // Récupérer les données du produit via notre service API
-    const product = await productService.getProductBySlug(params.slug);
-    
-    // Si le produit n'existe pas
-    if (!product) {
-      return {
-        notFound: true,
-        revalidate: 60 // Réessayer après 1 minute
-      };
-    }
-    
-    // Récupérer les produits liés
-    let relatedProducts = [];
-    try {
-      relatedProducts = await productService.getRelatedProducts(product.id, 4);
-    } catch (relatedError) {
-      console.error('Erreur lors de la récupération des produits liés:', relatedError);
-      // Continuer malgré l'erreur
-    }
-    
-    return {
-      props: {
-        product,
-        relatedProducts
-      },
-      // Revalidation toutes les heures (ISR)
-      revalidate: 3600
-    };
-  } catch (error) {
-    console.error('Erreur lors de la récupération du produit:', error);
-    return {
-      props: { product: null, relatedProducts: [] },
-      revalidate: 60 // Réessayer plus rapidement en cas d'erreur
-    };
-  }
+  // Temporairement désactivé pour éviter l'erreur avec productService
+  // TODO: Réactiver quand productService sera implémenté
+  return {
+    props: { 
+      product: null, 
+      relatedProducts: [] 
+    },
+    revalidate: 60
+  };
 }
 
 /**
  * Chemins à générer au moment de la construction
  */
 export async function getStaticPaths() {
-  try {
-    // Récupérer tous les produits (ou une partie) pour générer les chemins statiques
-    const products = await productService.getAllProducts({ limit: 20 });
-    
-    const paths = products.map((product) => ({
-      params: { slug: product.slug }
-    }));
-    
-    return {
-      paths,
-      // Générer les autres pages à la demande
-      fallback: true
-    };
-  } catch (error) {
-    console.error('Erreur lors de la récupération des chemins:', error);
-    return {
-      paths: [],
-      fallback: 'blocking'
-    };
-  }
+  // Temporairement désactivé pour éviter l'erreur avec productService
+  // TODO: Réactiver quand productService sera implémenté
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
 }
