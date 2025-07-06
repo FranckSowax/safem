@@ -7,6 +7,7 @@ import SalesModule from '../../components/dashboard/SalesModule';
 import ReportsModule from '../../components/dashboard/ReportsModule';
 import TeamModule from '../../components/dashboard/TeamModule';
 import OperationsModule from '../../components/dashboard/OperationsModule';
+import CaisseModule from '../../components/dashboard/CaisseModule';
 
 export default function Dashboard() {
   const [activeModule, setActiveModule] = useState('overview');
@@ -77,6 +78,8 @@ export default function Dashboard() {
         return <ModernHarvestModule />;
       case 'sales':
         return <SalesModule />;
+      case 'caisse':
+        return <CaisseModule />;
       case 'reports':
         return <ReportsModule />;
       case 'team':

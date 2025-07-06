@@ -6,6 +6,7 @@ import {
   HomeIcon,
   ChartBarIcon,
   ShoppingCartIcon,
+  CurrencyDollarIcon,
   DocumentTextIcon as DocumentReportIcon,
   UserGroupIcon,
   CogIcon,
@@ -20,9 +21,14 @@ const navigation = [
   { name: 'Dashboard', href: '#', key: 'overview', icon: HomeIcon },
   { name: 'Récoltes', href: '#', key: 'harvest', icon: ChartBarIcon },
   { name: 'Ventes', href: '#', key: 'sales', icon: ShoppingCartIcon },
+  { name: 'Caisse', href: '#', key: 'caisse', icon: CurrencyDollarIcon },
   { name: 'Rapports', href: '#', key: 'reports', icon: DocumentReportIcon },
   { name: 'Équipe', href: '#', key: 'team', icon: UserGroupIcon },
   { name: 'Opérations', href: '#', key: 'operations', icon: CogIcon },
+];
+
+const directLinks = [
+  { name: 'Caisse', href: '/caisse', icon: CurrencyDollarIcon },
 ];
 
 export default function ModernDashboardLayout({ children, activeModule, setActiveModule }) {
