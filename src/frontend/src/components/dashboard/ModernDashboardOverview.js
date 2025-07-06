@@ -7,6 +7,8 @@ import {
   UserIcon,
   PlusIcon
 } from '@heroicons/react/24/outline';
+import HarvestChart from './charts/HarvestChart';
+import SalesChart from './charts/SalesChart';
 
 export default function ModernDashboardOverview({ data }) {
   const { todayHarvest, todaySales, currentStock, alerts, teamActivity, kpis } = data;
@@ -116,6 +118,12 @@ export default function ModernDashboardOverview({ data }) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <HarvestChart />
+        <SalesChart />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
