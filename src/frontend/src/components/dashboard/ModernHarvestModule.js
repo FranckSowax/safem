@@ -115,36 +115,37 @@ export default function ModernHarvestModule() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Gestion des Récoltes</h2>
-        <p className="text-gray-600">Enregistrez et suivez vos récoltes quotidiennes</p>
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Gestion des Récoltes</h2>
+        <p className="text-gray-600 text-sm sm:text-base">Enregistrez et suivez vos récoltes quotidiennes</p>
       </div>
 
       {/* Tabs */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
         <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
+          <nav className="flex space-x-2 sm:space-x-8 px-4 sm:px-6 overflow-x-auto">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex items-center py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                     isActive
                       ? 'border-green-500 text-green-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  <tab.icon className={`mr-2 h-5 w-5 ${isActive ? 'text-green-500' : 'text-gray-400'}`} />
-                  {tab.label}
+                  <tab.icon className={`mr-1 sm:mr-2 h-4 sm:h-5 w-4 sm:w-5 ${isActive ? 'text-green-500' : 'text-gray-400'}`} />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
               );
             })}
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {activeTab === 'saisie' && (
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Form Header */}

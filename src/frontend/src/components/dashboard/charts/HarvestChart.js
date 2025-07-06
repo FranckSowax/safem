@@ -130,8 +130,8 @@ export default function HarvestChart() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-      <div className="h-80">
+    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+      <div className="h-64 sm:h-80">
         <Bar data={data} options={options} />
       </div>
     </div>

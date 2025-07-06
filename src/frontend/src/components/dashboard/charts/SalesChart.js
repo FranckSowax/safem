@@ -117,8 +117,8 @@ export default function SalesChart() {
   const topProduct = data.labels[data.datasets[0].data.indexOf(Math.max(...data.datasets[0].data))];
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-      <div className="relative h-80">
+    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+      <div className="relative h-64 sm:h-80">
         <Doughnut data={data} options={options} />
         
         {/* Centre du donut avec statistiques */}

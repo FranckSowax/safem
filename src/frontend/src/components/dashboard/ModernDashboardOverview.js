@@ -51,13 +51,13 @@ export default function ModernDashboardOverview({ data }) {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Total Projects Card */}
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100 text-sm font-medium">Revenus Quotidiens</p>
-              <p className="text-3xl font-bold mt-2">{formatCurrency(kpis.dailyRevenue)}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-white mt-2">{kpis.dailyRevenue} FCFA</p>
               <div className="flex items-center mt-2">
                 <TrendingUpIcon className="h-4 w-4 mr-1" />
                 <span className="text-sm">+12% depuis hier</span>
@@ -70,11 +70,11 @@ export default function ModernDashboardOverview({ data }) {
         </div>
 
         {/* Ended Projects */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Productivité</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{kpis.weeklyProductivity}%</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{kpis.weeklyProductivity}%</p>
               <div className="flex items-center mt-2">
                 <TrendingUpIcon className="h-4 w-4 mr-1 text-green-500" />
                 <span className="text-sm text-green-600">+5% cette semaine</span>
@@ -87,11 +87,11 @@ export default function ModernDashboardOverview({ data }) {
         </div>
 
         {/* Running Projects */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Croissance Mensuelle</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{kpis.monthlyGrowth}%</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{kpis.monthlyGrowth}%</p>
               <div className="flex items-center mt-2">
                 <TrendingUpIcon className="h-4 w-4 mr-1 text-blue-500" />
                 <span className="text-sm text-blue-600">En progression</span>
@@ -104,11 +104,11 @@ export default function ModernDashboardOverview({ data }) {
         </div>
 
         {/* Pending Projects */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Niveau Stock</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{kpis.stockLevel}%</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{kpis.stockLevel}%</p>
               <div className="flex items-center mt-2">
                 <span className="text-sm text-gray-600">Stock optimal</span>
               </div>
@@ -121,16 +121,16 @@ export default function ModernDashboardOverview({ data }) {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <HarvestChart />
         <SalesChart />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Reminders Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Alertes</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Alertes</h3>
             <button className="text-green-600 hover:text-green-700 text-sm font-medium">
               + Nouvelle
             </button>
@@ -156,9 +156,9 @@ export default function ModernDashboardOverview({ data }) {
         </div>
 
         {/* Project Progress */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Récoltes du Jour</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Récoltes du Jour</h3>
           </div>
           
           <div className="space-y-4">
@@ -186,9 +186,9 @@ export default function ModernDashboardOverview({ data }) {
         </div>
 
         {/* Team Collaboration */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Activité Équipe</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Activité Équipe</h3>
             <button className="text-green-600 hover:text-green-700 text-sm font-medium">
               + Ajouter
             </button>
