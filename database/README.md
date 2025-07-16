@@ -1,4 +1,4 @@
-# Configuration Base de Données SAFEM
+# Configuration Base de Données SAFEM - Gabon
 
 ## 🗄️ Supabase Setup
 
@@ -75,7 +75,7 @@ import SalesService from '../services/salesService';
 // Créer une vente
 const result = await SalesService.createSale({
   client_name: "Jean Dupont",
-  client_phone: "+237 6XX XXX XXX",
+  client_phone: "+241 XX XX XX XX",
   items: [
     {
       product_id: 1,

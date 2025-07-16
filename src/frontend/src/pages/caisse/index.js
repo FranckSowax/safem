@@ -585,7 +585,7 @@ export default function CaisseFusion() {
                             type="tel"
                             value={clientPhone}
                             onChange={(e) => setClientPhone(e.target.value)}
-                            placeholder="Ex: +237 6XX XXX XXX"
+                            placeholder="+241 XX XX XX XX"
                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
