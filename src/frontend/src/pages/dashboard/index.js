@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
 import ModernDashboardLayout from '../../layouts/ModernDashboardLayout';
 import ModernDashboardOverview from '../../components/dashboard/ModernDashboardOverview';
@@ -8,86 +8,93 @@ import ReportsModule from '../../components/dashboard/ReportsModule';
 import TeamModule from '../../components/dashboard/TeamModule';
 import OperationsModule from '../../components/dashboard/OperationsModule';
 import CaisseModule from '../../components/dashboard/CaisseModule';
+import useDashboard from '../../hooks/useDashboard';
 
 export default function Dashboard() {
   const [activeModule, setActiveModule] = useState('overview');
-  const [dashboardData, setDashboardData] = useState({
-    todayHarvest: [],
-    todaySales: [],
-    currentStock: [],
-    alerts: [],
-    teamActivity: [],
-    kpis: {
-      dailyRevenue: 0,
-      weeklyProductivity: 0,
-      monthlyGrowth: 0,
-      stockLevel: 0
-    }
+  
+  // Utiliser le hook personnalisé pour les données dashboard
+  const {
+    data: dashboardData,
+    loading,
+    error,
+    refresh,
+    lastUpdate,
+    isConnected,
+    getFormattedKPIs,
+    getAlertsByPriority
+  } = useDashboard({
+    refreshInterval: 30000, // 30 secondes
+    realtime: true
   });
 
-  useEffect(() => {
-    // Charger les données du dashboard
-    loadDashboardData();
-  }, []);
 
-  const loadDashboardData = async () => {
-    try {
-      // Simulation des données - à remplacer par des appels API réels
-      const mockData = {
-        todayHarvest: [
-          { product: 'Poivron De conti', quantity: 25, quality: 'A', technician: 'Jean Mbeng' },
-          { product: 'Tomate Padma', quantity: 40, quality: 'A', technician: 'Marie Nze' },
-          { product: 'Piment Demon', quantity: 15, quality: 'B', technician: 'Paul Obiang' }
-        ],
-        todaySales: [
-          { product: 'Poivron', quantity: 20, amount: 50000, client: 'Restaurant Le Palmier' },
-          { product: 'Tomate', quantity: 30, amount: 45000, client: 'Particulier' }
-        ],
-        currentStock: [
-          { product: 'Poivron', quantity: 45, unit: 'kg', status: 'normal' },
-          { product: 'Tomate', quantity: 60, unit: 'kg', status: 'normal' },
-          { product: 'Piment', quantity: 8, unit: 'kg', status: 'low' }
-        ],
-        alerts: [
-          { type: 'stock', message: 'Stock de piment faible (8kg)', priority: 'high' },
-          { type: 'quality', message: 'Contrôle qualité prévu demain', priority: 'medium' }
-        ],
-        teamActivity: [
-          { name: 'Jean Mbeng', status: 'active', task: 'Récolte poivrons - Secteur A' },
-          { name: 'Marie Nze', status: 'active', task: 'Récolte tomates - Secteur B' },
-          { name: 'Paul Obiang', status: 'break', task: 'Pause déjeuner' }
-        ],
-        kpis: {
-          dailyRevenue: 95000,
-          weeklyProductivity: 85,
-          monthlyGrowth: 12,
-          stockLevel: 78
-        }
-      };
-      setDashboardData(mockData);
-    } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-    }
-  };
 
   const renderActiveModule = () => {
+    // Afficher un loader pendant le chargement initial
+    if (loading && !dashboardData) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          <span className="ml-3 text-gray-600">Chargement des données...</span>
+        </div>
+      );
+    }
+
+    // Afficher une erreur si les données n'ont pas pu être chargées
+    if (error && !dashboardData) {
+      return (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <div className="text-red-600 mb-2">
+            <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-red-800 mb-2">Erreur de chargement</h3>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={refresh}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Réessayer
+          </button>
+        </div>
+      );
+    }
+
     switch (activeModule) {
       case 'overview':
-        return <ModernDashboardOverview data={dashboardData} />;
+        return (
+          <ModernDashboardOverview 
+            data={dashboardData || {}} 
+            loading={loading}
+            lastUpdate={lastUpdate}
+            onRefresh={refresh}
+            isConnected={isConnected}
+          />
+        );
       case 'harvest':
         return <ModernHarvestModule />;
       case 'sales':
-        return <SalesModule />;
+        return <SalesModule data={dashboardData} />;
       case 'caisse':
         return <CaisseModule />;
       case 'reports':
-        return <ReportsModule />;
+        return <ReportsModule data={dashboardData} />;
       case 'team':
         return <TeamModule />;
       case 'operations':
         return <OperationsModule />;
       default:
-        return <ModernDashboardOverview data={dashboardData} />;
+        return (
+          <ModernDashboardOverview 
+            data={dashboardData || {}} 
+            loading={loading}
+            lastUpdate={lastUpdate}
+            onRefresh={refresh}
+            isConnected={isConnected}
+          />
+        );
     }
   };
 

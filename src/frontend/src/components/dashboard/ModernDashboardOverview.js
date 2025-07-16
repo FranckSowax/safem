@@ -10,8 +10,23 @@ import {
 import HarvestChart from './charts/HarvestChart';
 import SalesChart from './charts/SalesChart';
 
-export default function ModernDashboardOverview({ data }) {
-  const { todayHarvest, todaySales, currentStock, alerts, teamActivity, kpis } = data;
+export default function ModernDashboardOverview({ 
+  data, 
+  loading = false, 
+  lastUpdate = null, 
+  onRefresh = null, 
+  isConnected = true 
+}) {
+  const { 
+    todayHarvest = [], 
+    todaySales = [], 
+    recentSales = [],
+    currentStock = [], 
+    alerts = [], 
+    teamActivity = [], 
+    kpis = {},
+    salesStats = {}
+  } = data || {};
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -50,17 +65,58 @@ export default function ModernDashboardOverview({ data }) {
 
   return (
     <div className="space-y-6">
+      {/* Header avec statut et rafraîchissement */}
+      <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm border">
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className={`w-3 h-3 rounded-full ${
+              isConnected ? 'bg-green-500' : 'bg-red-500'
+            }`}></div>
+            <span className="text-sm font-medium text-gray-700">
+              {isConnected ? 'Connecté' : 'Déconnecté'}
+            </span>
+          </div>
+          {lastUpdate && (
+            <div className="text-sm text-gray-500">
+              Dernière mise à jour: {formatDate(lastUpdate.toISOString())}
+            </div>
+          )}
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          {loading && (
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+              <span>Synchronisation...</span>
+            </div>
+          )}
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              disabled={loading}
+              className="flex items-center space-x-1 px-3 py-1.5 text-sm bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Actualiser</span>
+            </button>
+          )}
+        </div>
+      </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        {/* Total Projects Card */}
+        {/* Revenus Quotidiens Card */}
         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100 text-sm font-medium">Revenus Quotidiens</p>
-              <p className="text-2xl sm:text-3xl font-bold text-white mt-2">{kpis.dailyRevenue} FCFA</p>
+              <p className="text-2xl sm:text-3xl font-bold text-white mt-2">
+                {formatCurrency(kpis.dailyRevenue || 0)}
+              </p>
               <div className="flex items-center mt-2">
                 <TrendingUpIcon className="h-4 w-4 mr-1" />
-                <span className="text-sm">+12% depuis hier</span>
+                <span className="text-sm">{kpis.dailySales || 0} vente{(kpis.dailySales || 0) > 1 ? 's' : ''}</span>
               </div>
             </div>
             <div className="bg-white bg-opacity-20 rounded-full p-3">
@@ -69,15 +125,17 @@ export default function ModernDashboardOverview({ data }) {
           </div>
         </div>
 
-        {/* Ended Projects */}
+        {/* Revenus Hebdomadaires */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Productivité</p>
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{kpis.weeklyProductivity}%</p>
+              <p className="text-gray-600 text-sm font-medium">Revenus Hebdomadaires</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
+                {formatCurrency(kpis.weeklyRevenue || 0)}
+              </p>
               <div className="flex items-center mt-2">
                 <TrendingUpIcon className="h-4 w-4 mr-1 text-green-500" />
-                <span className="text-sm text-green-600">+5% cette semaine</span>
+                <span className="text-sm text-green-600">{kpis.weeklyProductivity || 0} articles vendus</span>
               </div>
             </div>
             <div className="bg-gray-100 rounded-full p-3">
@@ -86,15 +144,25 @@ export default function ModernDashboardOverview({ data }) {
           </div>
         </div>
 
-        {/* Running Projects */}
+        {/* Vente Moyenne */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Croissance Mensuelle</p>
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{kpis.monthlyGrowth}%</p>
+              <p className="text-gray-600 text-sm font-medium">Vente Moyenne</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
+                {formatCurrency(kpis.averageSale || 0)}
+              </p>
               <div className="flex items-center mt-2">
-                <TrendingUpIcon className="h-4 w-4 mr-1 text-blue-500" />
-                <span className="text-sm text-blue-600">En progression</span>
+                {(kpis.monthlyGrowth || 0) >= 0 ? (
+                  <TrendingUpIcon className="h-4 w-4 mr-1 text-green-500" />
+                ) : (
+                  <TrendingDownIcon className="h-4 w-4 mr-1 text-red-500" />
+                )}
+                <span className={`text-sm ${
+                  (kpis.monthlyGrowth || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {(kpis.monthlyGrowth || 0) >= 0 ? '+' : ''}{(kpis.monthlyGrowth || 0).toFixed(1)}% ce mois
+                </span>
               </div>
             </div>
             <div className="bg-blue-100 rounded-full p-3">
@@ -103,14 +171,18 @@ export default function ModernDashboardOverview({ data }) {
           </div>
         </div>
 
-        {/* Pending Projects */}
+        {/* Revenus Mensuels */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Niveau Stock</p>
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{kpis.stockLevel}%</p>
+              <p className="text-gray-600 text-sm font-medium">Revenus Mensuels</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
+                {formatCurrency(kpis.monthlyRevenue || 0)}
+              </p>
               <div className="flex items-center mt-2">
-                <span className="text-sm text-gray-600">Stock optimal</span>
+                <span className="text-sm text-gray-600">
+                  Stock: {(kpis.stockLevel || 0).toFixed(0)}%
+                </span>
               </div>
             </div>
             <div className="bg-yellow-100 rounded-full p-3">
