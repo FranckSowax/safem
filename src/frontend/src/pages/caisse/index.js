@@ -8,6 +8,7 @@ import {
   PlusIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import SalesService from '../../services/salesService';
 
 // Liste complète des produits SAFEM avec variétés
 const products = [
@@ -70,6 +71,8 @@ export default function CaisseFusion() {
   const [weight, setWeight] = useState('1');
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [saleCompleted, setSaleCompleted] = useState(false);
+  const [clientName, setClientName] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
 
   // Calculer le total
   const total = cart.reduce((sum, item) => sum + (item.price * item.weight), 0);
@@ -135,10 +138,42 @@ export default function CaisseFusion() {
   };
 
   // Confirmer la vente
-  const confirmSale = () => {
-    setSaleCompleted(true);
-    // Ici on pourrait envoyer les données à l'API
-    console.log('Vente confirmée:', { cart, total, timestamp: new Date() });
+  const confirmSale = async () => {
+    if (!clientName.trim()) {
+      alert('Veuillez saisir le nom du client');
+      return;
+    }
+    
+    // Données de vente complètes pour l'API
+    const saleData = {
+      client_name: clientName.trim(),
+      client_phone: clientPhone.trim() || null,
+      items: cart.map(item => ({
+        product_id: item.id,
+        product_name: item.name,
+        quantity: item.weight,
+        unit_price: item.price,
+        total_price: item.weight * item.price
+      })),
+      total_amount: total,
+      payment_method: 'cash' // Par défaut
+    };
+    
+    try {
+      // Envoyer la vente à Supabase
+      const result = await SalesService.createSale(saleData);
+      
+      if (result.success) {
+        setSaleCompleted(true);
+        console.log('✅ Vente enregistrée:', result.data);
+      } else {
+        console.error('❌ Erreur vente:', result.error);
+        alert(`Erreur lors de l'enregistrement: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('❌ Erreur inattendue:', error);
+      alert('Erreur inattendue lors de l\'enregistrement de la vente');
+    }
   };
 
   // Imprimer le ticket
@@ -174,6 +209,10 @@ export default function CaisseFusion() {
           <h2>🌱 FERME SAFEM</h2>
           <p>MIDJEMBOU - CAMEROUN</p>
           <p>${date} - ${time}</p>
+          <div style="border-top: 1px solid #ccc; margin: 10px 0; padding-top: 10px;">
+            <p><strong>Client:</strong> ${clientName}</p>
+            ${clientPhone ? `<p><strong>Tél:</strong> ${clientPhone}</p>` : ''}
+          </div>
         </div>
         
         <div class="items">
@@ -210,6 +249,8 @@ export default function CaisseFusion() {
     clearCart();
     setShowCheckoutModal(false);
     setSaleCompleted(false);
+    setClientName('');
+    setClientPhone('');
   };
 
   // Raccourcis clavier
@@ -519,6 +560,38 @@ export default function CaisseFusion() {
                   </div>
 
                   <div className="border-t bg-gray-50 p-6">
+                    {/* Informations Client */}
+                    <div className="mb-6">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">👤 Informations Client</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Nom du client *
+                          </label>
+                          <input
+                            type="text"
+                            value={clientName}
+                            onChange={(e) => setClientName(e.target.value)}
+                            placeholder="Nom complet du client"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Numéro de téléphone
+                          </label>
+                          <input
+                            type="tel"
+                            value={clientPhone}
+                            onChange={(e) => setClientPhone(e.target.value)}
+                            placeholder="Ex: +237 6XX XXX XXX"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="flex items-center justify-between mb-6">
                       <div className="text-left">
                         <p className="text-sm text-gray-600">Articles: {totalItems}</p>
