@@ -27,17 +27,15 @@ const navigation = [
   { name: 'Opérations', href: '#', key: 'operations', icon: CogIcon },
 ];
 
-const directLinks = [
-  { name: 'Caisse', href: '/caisse', icon: CurrencyDollarIcon },
-];
+
 
 export default function ModernDashboardLayout({ children, activeModule, setActiveModule }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
 
-  const handleModuleChange = (moduleKey) => {
-    setActiveModule(moduleKey);
+  const handleModuleChange = (item) => {
+    setActiveModule(item.key);
     setSidebarOpen(false);
   };
 
@@ -45,8 +43,12 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleModuleChangeWithClose = (moduleKey) => {
-    setActiveModule(moduleKey);
+  const handleModuleChangeWithClose = (item) => {
+    if (item.isExternal) {
+      router.push(item.href);
+    } else {
+      setActiveModule(item.key);
+    }
     setIsMobileMenuOpen(false);
   };
 
@@ -68,7 +70,7 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
       )}
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:w-64 lg:bg-white lg:shadow-lg lg:flex">
+      <div className="hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:w-64 md:bg-white md:shadow-lg md:flex">
         <div className="flex h-full flex-col w-full">
           {/* Logo */}
           <div className="flex h-16 items-center px-6">
@@ -87,7 +89,7 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
               return (
                 <button
                   key={item.key}
-                  onClick={() => setActiveModule(item.key)}
+                  onClick={() => handleModuleChange(item)}
                   className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     isActive
                       ? 'bg-green-50 text-green-700 border-r-2 border-green-600'
@@ -144,7 +146,7 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
               return (
                 <button
                   key={item.key}
-                  onClick={() => handleModuleChangeWithClose(item.key)}
+                  onClick={() => handleModuleChangeWithClose(item)}
                   className={`w-full flex items-center px-3 py-3 text-base font-medium rounded-lg transition-colors ${
                     isActive
                       ? 'bg-green-50 text-green-700 border-r-2 border-green-600'
@@ -174,7 +176,7 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="md:pl-64">
         {/* Top bar */}
         <div className="bg-white shadow-sm border-b border-gray-200">
           <div className="px-4 sm:px-6 py-4">
@@ -183,7 +185,7 @@ export default function ModernDashboardLayout({ children, activeModule, setActiv
                 {/* Mobile menu button */}
                 <button
                   onClick={toggleMobileMenu}
-                  className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 mr-3"
+                  className="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 mr-3"
                 >
                   <MenuIcon className="h-6 w-6" />
                 </button>
