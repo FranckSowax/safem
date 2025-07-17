@@ -8,7 +8,7 @@ import {
   CheckIcon,
   PrinterIcon
 } from '@heroicons/react/24/outline';
-import { SalesService } from '../../services/SalesService';
+import { SalesService } from '../../services/salesService';
 
 // Mapping UUID des produits selon les mémoires
 const PRODUCT_UUID_MAP = {
