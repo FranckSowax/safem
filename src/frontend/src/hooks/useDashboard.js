@@ -10,8 +10,8 @@ import DashboardService from '../services/dashboardService';
  */
 export function useDashboard(options = {}) {
   const {
-    refreshInterval = 30000, // 30 secondes
-    realtime = true
+    refreshInterval = 30000, // 30 secondes en mode Realtime (polling de secours)
+    realtime = true // Activé - Supabase Realtime maintenant configuré
   } = options;
 
   const [data, setData] = useState(null);
@@ -32,12 +32,27 @@ export function useDashboard(options = {}) {
       }
       setError(null);
 
+      console.log('🔄 [useDashboard] Chargement des données...', { showLoading, timestamp: new Date().toISOString() });
       const dashboardData = await DashboardService.getDashboardData();
+      console.log('✅ [useDashboard] Données chargées:', {
+        todaySales: dashboardData.todaySales?.length || 0,
+        dailyRevenue: dashboardData.kpis?.dailyRevenue || 0,
+        timestamp: new Date().toISOString()
+      });
+      
       setData(dashboardData);
       setLastUpdate(new Date());
 
     } catch (err) {
-      console.error('Erreur lors du chargement des données dashboard:', err);
+      console.error('❌ [useDashboard] Erreur lors du chargement des données dashboard:', err);
+      
+      // Gestion spéciale pour les erreurs de connexion
+      if (err.message.includes('Failed to fetch') || err.message.includes('ERR_CONNECTION_CLOSED')) {
+        console.warn('⚠️ [useDashboard] Connexion fermée - utilisation des données en cache');
+        // Ne pas afficher l'erreur à l'utilisateur pour les erreurs de connexion
+        return;
+      }
+      
       setError(err.message);
     } finally {
       setLoading(false);
@@ -79,9 +94,10 @@ export function useDashboard(options = {}) {
   const setupAutoRefresh = useCallback(() => {
     if (refreshInterval > 0 && !refreshIntervalRef.current) {
       refreshIntervalRef.current = setInterval(() => {
+        console.log('⏰ [useDashboard] Rafraîchissement automatique déclenché', { timestamp: new Date().toISOString() });
         loadData(false); // Rechargement silencieux
       }, refreshInterval);
-      console.log(`⏰ Rafraîchissement automatique configuré: ${refreshInterval}ms`);
+      console.log(`⏰ [useDashboard] Rafraîchissement automatique configuré: ${refreshInterval}ms`);
     }
   }, [refreshInterval, loadData]);
 

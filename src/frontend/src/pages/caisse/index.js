@@ -10,6 +10,43 @@ import {
 } from '@heroicons/react/24/outline';
 import SalesService from '../../services/salesService';
 
+// Mapping des IDs produits vers leurs UUIDs dans Supabase
+const PRODUCT_UUID_MAP = {
+  // PIMENTS
+  1: "ac768216-034c-4193-8807-2ac57ed2b157", // Demon -> Piment Demon
+  2: "ac768216-034c-4193-8807-2ac57ed2b157", // Shamsi -> Piment Demon
+  3: "ac768216-034c-4193-8807-2ac57ed2b157", // Avenir -> Piment Demon
+  4: "ac768216-034c-4193-8807-2ac57ed2b157", // The King -> Piment Demon
+  
+  // POIVRONS
+  5: "5640ffb3-a382-4522-8c63-bdb354d422cd", // Yolo Wander -> Poivron De conti
+  6: "5640ffb3-a382-4522-8c63-bdb354d422cd", // De Conti -> Poivron De conti
+  7: "5640ffb3-a382-4522-8c63-bdb354d422cd", // Nobili -> Poivron De conti
+  
+  // TOMATES
+  8: "f24f19f6-657a-4bde-8be4-f0d7b2ecd181", // Padma -> Tomate Padma
+  9: "f24f19f6-657a-4bde-8be4-f0d7b2ecd181", // Anita -> Tomate Padma
+  
+  // AUBERGINES
+  10: "72920ee2-ec40-4c6f-8a91-b497f2168c50", // Africaine -> Aubergine Africaine
+  11: "72920ee2-ec40-4c6f-8a91-b497f2168c50", // Bonika -> Aubergine Africaine
+  12: "72920ee2-ec40-4c6f-8a91-b497f2168c50", // Ping Tung -> Aubergine Africaine
+  
+  // AUTRES LÉGUMES
+  13: "971180f1-9758-411c-ad50-eac8be35406f", // Chou Aventy -> Chou Aventy
+  14: "75d41edc-3d43-4176-a84a-c06bca79cdec", // Gombo Kirikou -> Gombo Kirikou
+  15: "16fa5325-d926-43dd-b238-96a111b3b204", // Concombre Murano -> Concombre Murano
+  16: "704885af-517f-4a7f-948c-3c8565a9cfac", // Ciboulette -> Persil Ndolé
+  
+  // BANANES
+  17: "77825bcf-42d9-47c8-b8c9-452088e9b1fa", // Plantain Ebanga -> Banane plantain Ebanga
+  18: "77825bcf-42d9-47c8-b8c9-452088e9b1fa", // Banane Douce -> Banane plantain Ebanga
+  
+  // TAROS
+  20: "c3dade41-91bb-4dfc-b706-5fba198d1978", // Taro Blanc -> Taro blanc
+  21: "c3dade41-91bb-4dfc-b706-5fba198d1978"  // Taro Rouge -> Taro blanc
+};
+
 // Liste complète des produits SAFEM avec variétés
 const products = [
   // PIMENTS 🌶️
@@ -75,7 +112,11 @@ export default function CaisseFusion() {
   const [clientPhone, setClientPhone] = useState('');
 
   // Calculer le total
-  const total = cart.reduce((sum, item) => sum + (item.price * item.weight), 0);
+  const total = cart.reduce((sum, item) => {
+    const price = parseFloat(item.price) || 0;
+    const weight = parseFloat(item.weight) || 0;
+    return sum + (price * weight);
+  }, 0);
   const totalItems = cart.length;
 
   // Ajouter un produit au panier
@@ -139,7 +180,13 @@ export default function CaisseFusion() {
 
   // Confirmer la vente
   const confirmSale = async () => {
+    console.log('🔄 [confirmSale] Début de la confirmation de vente');
+    console.log('📋 [confirmSale] Client:', clientName, 'Téléphone:', clientPhone);
+    console.log('🛒 [confirmSale] Panier:', cart);
+    console.log('💰 [confirmSale] Total:', total);
+    
     if (!clientName.trim()) {
+      console.log('❌ [confirmSale] Nom client manquant');
       alert('Veuillez saisir le nom du client');
       return;
     }
@@ -148,29 +195,42 @@ export default function CaisseFusion() {
     const saleData = {
       client_name: clientName.trim(),
       client_phone: clientPhone.trim() || null,
-      items: cart.map(item => ({
-        product_id: item.id,
-        product_name: item.name,
-        quantity: item.weight,
-        unit_price: item.price,
-        total_price: item.weight * item.price
-      })),
+      items: cart.map(item => {
+        const productUuid = PRODUCT_UUID_MAP[item.id] || item.id;
+        console.log(`🔄 [confirmSale] Mapping produit: ${item.name} (ID: ${item.id}) -> UUID: ${productUuid}`);
+        return {
+          product_id: productUuid,
+          product_name: item.name,
+          quantity: item.weight,
+          unit_price: item.price,
+          total_price: item.weight * item.price
+        };
+      }),
       total_amount: total,
-      payment_method: 'cash' // Par défaut
+      payment_method: 'cash', // Par défaut
+      status: 'paid' // Statut payé pour les ventes de la caisse
     };
     
+    console.log('📤 [confirmSale] Données à envoyer:', saleData);
+    
     try {
+      console.log('🔄 [confirmSale] Appel SalesService.createSale...');
       // Envoyer la vente à Supabase
       const result = await SalesService.createSale(saleData);
       
+      console.log('📥 [confirmSale] Résultat reçu:', result);
+      
       if (result.success) {
+        console.log('✅ [confirmSale] Vente confirmée avec succès');
         setSaleCompleted(true);
         console.log('✅ Vente enregistrée:', result.data);
       } else {
+        console.error('❌ [confirmSale] Erreur dans le résultat:', result.error);
         console.error('❌ Erreur vente:', result.error);
         alert(`Erreur lors de l'enregistrement: ${result.message}`);
       }
     } catch (error) {
+      console.error('❌ [confirmSale] Exception capturée:', error);
       console.error('❌ Erreur inattendue:', error);
       alert('Erreur inattendue lors de l\'enregistrement de la vente');
     }
@@ -207,7 +267,6 @@ export default function CaisseFusion() {
       <body>
         <div class="header">
           <h2>🌱 FERME SAFEM</h2>
-          <p>MIDJEMBOU - CAMEROUN</p>
           <p>${date} - ${time}</p>
           <div style="border-top: 1px solid #ccc; margin: 10px 0; padding-top: 10px;">
             <p><strong>Client:</strong> ${clientName}</p>
@@ -492,7 +551,12 @@ export default function CaisseFusion() {
                   autoFocus
                 />
                 <p className="text-center mt-2 text-lg font-bold text-blue-600">
-                  Total: {weight && !isNaN(parseFloat(weight)) ? (selectedProduct.price * parseFloat(weight)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : 0} FCFA
+                  Total: {(() => {
+                    const w = parseFloat(weight) || 0;
+                    const p = parseFloat(selectedProduct?.price) || 0;
+                    const total = w * p;
+                    return isNaN(total) ? 0 : total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                  })()} FCFA
                 </p>
               </div>
 
@@ -545,13 +609,18 @@ export default function CaisseFusion() {
                             <div>
                               <h4 className="font-bold text-gray-900">{item.name}</h4>
                               <p className="text-sm text-gray-600">
-                                {item.weight}kg × {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} FCFA/kg
+                                {parseFloat(item.weight) || 0}kg × {(parseFloat(item.price) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} FCFA/kg
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="font-bold text-lg text-green-600">
-                              {(item.weight * item.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} FCFA
+                              {(() => {
+                                const w = parseFloat(item.weight) || 0;
+                                const p = parseFloat(item.price) || 0;
+                                const total = w * p;
+                                return isNaN(total) ? '0' : total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                              })()} FCFA
                             </p>
                           </div>
                         </div>
@@ -633,7 +702,6 @@ export default function CaisseFusion() {
                   <div className="p-6 text-center">
                     <div className="bg-gray-50 rounded-lg p-6 mb-6">
                       <h3 className="text-lg font-bold text-gray-900 mb-2">🌱 FERME SAFEM</h3>
-                      <p className="text-sm text-gray-600 mb-4">MIDJEMBOU - CAMEROUN</p>
                       
                       <div className="text-left space-y-2 mb-4">
                         {cart.map((item) => (

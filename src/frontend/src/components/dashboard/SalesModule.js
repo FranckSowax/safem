@@ -9,8 +9,13 @@ const CLIENT_TYPES = {
 
 const PAYMENT_METHODS = ['Espèces', 'Mobile Money', 'Virement', 'Chèque'];
 
-export default function SalesModule() {
-  const [activeTab, setActiveTab] = useState('nouvelle-vente');
+export default function SalesModule({ 
+  data = {}, 
+  recentSales = [], 
+  todaySales = [], 
+  currentStock = [] 
+}) {
+  const [activeTab, setActiveTab] = useState('historique-ventes');
   const [availableStock, setAvailableStock] = useState([]);
   const [saleForm, setSaleForm] = useState({
     date: new Date().toISOString().split('T')[0],
@@ -23,14 +28,43 @@ export default function SalesModule() {
     notes: ''
   });
   const [salesHistory, setSalesHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fallback pour compatibilité avec l'ancienne API
+  const finalRecentSales = recentSales.length > 0 ? recentSales : (data.recentSales || []);
+  const finalTodaySales = todaySales.length > 0 ? todaySales : (data.todaySales || []);
+  const finalCurrentStock = currentStock.length > 0 ? currentStock : (data.currentStock || []);
 
   useEffect(() => {
     loadAvailableStock();
     loadSalesHistory();
   }, []);
+  
+  // Recharger les données quand les props changent
+  useEffect(() => {
+    loadAvailableStock();
+    loadSalesHistory();
+  }, [finalRecentSales, finalTodaySales, finalCurrentStock]);
 
   const loadAvailableStock = () => {
-    // Simulation du stock disponible
+    // Utiliser les données de stock du dashboard si disponibles
+    if (finalCurrentStock && Array.isArray(finalCurrentStock) && finalCurrentStock.length > 0) {
+      try {
+        setAvailableStock(finalCurrentStock.map(item => ({
+          name: item?.name || item?.product || 'Produit inconnu',
+          quantity: item?.quantity || 0,
+          unit: item?.unit || 'unité',
+          price: item?.price || 0,
+          quality: 'A' // Par défaut
+        })));
+        return;
+      } catch (error) {
+        console.error('Erreur lors du chargement du stock:', error);
+        // Continuer avec le fallback
+      }
+    }
+    
+    // Fallback: simulation du stock disponible
     const mockStock = [
       { name: 'Poivron De conti', quantity: 45, unit: 'kg', price: 2250, quality: 'A' },
       { name: 'Tomate Padma', quantity: 60, unit: 'kg', price: 1500, quality: 'A' },
@@ -46,7 +80,49 @@ export default function SalesModule() {
   };
 
   const loadSalesHistory = () => {
-    // Simulation de l'historique des ventes
+    setIsLoading(true);
+    // Utiliser les vraies données du dashboard si disponibles
+    if (finalRecentSales && Array.isArray(finalRecentSales) && finalRecentSales.length > 0) {
+      try {
+        setSalesHistory(finalRecentSales.map(sale => {
+          // Gestion sécurisée des dates
+          let saleDate;
+          try {
+            if (sale?.time) {
+              const dateObj = new Date(sale.time);
+              saleDate = isNaN(dateObj.getTime()) ? new Date().toISOString().split('T')[0] : dateObj.toISOString().split('T')[0];
+            } else if (sale?.date) {
+              const dateObj = new Date(sale.date);
+              saleDate = isNaN(dateObj.getTime()) ? new Date().toISOString().split('T')[0] : dateObj.toISOString().split('T')[0];
+            } else {
+              saleDate = new Date().toISOString().split('T')[0];
+            }
+          } catch (error) {
+            console.warn('Erreur de formatage de date:', error);
+            saleDate = new Date().toISOString().split('T')[0];
+          }
+          
+          return {
+            id: sale?.id || Math.random().toString(36),
+            date: saleDate,
+            clientName: sale?.client || sale?.clientName || 'Client inconnu',
+            clientType: sale?.clientType || 'particulier',
+            phone: sale?.phone || '',
+            total: sale?.amount || sale?.total || 0,
+            items: Array.isArray(sale?.products) ? sale.products : [],
+            status: sale?.status === 'paid' ? 'Payée' : (sale?.status === 'pending' ? 'En attente' : 'Payée'),
+            paymentMethod: 'Espèces' // Par défaut
+          };
+        }));
+        setIsLoading(false);
+        return;
+      } catch (error) {
+        console.error('Erreur lors du chargement de l\'historique des ventes:', error);
+        // Continuer avec le fallback
+      }
+    }
+    
+    // Fallback: simulation de l'historique des ventes
     const mockHistory = [
       {
         id: 1,
@@ -79,6 +155,7 @@ export default function SalesModule() {
       }
     ];
     setSalesHistory(mockHistory);
+    setIsLoading(false);
   };
 
   const addItemToSale = () => {
@@ -133,7 +210,7 @@ export default function SalesModule() {
 
   const calculateSaleTotal = () => {
     const subtotal = saleForm.items.reduce((sum, item) => sum + (item.total || 0), 0);
-    const discountPercent = CLIENT_TYPES[saleForm.clientType].discount;
+    const discountPercent = CLIENT_TYPES[saleForm.clientType]?.discount || 0;
     const discount = subtotal * (discountPercent / 100);
     const total = subtotal - discount;
     
@@ -225,16 +302,6 @@ export default function SalesModule() {
       <div className="border-b border-gray-200 mb-6">
         <nav className="-mb-px flex space-x-8">
           <button
-            onClick={() => setActiveTab('nouvelle-vente')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'nouvelle-vente'
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Nouvelle Vente
-          </button>
-          <button
             onClick={() => setActiveTab('historique')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'historique'
@@ -243,6 +310,16 @@ export default function SalesModule() {
             }`}
           >
             Historique
+          </button>
+          <button
+            onClick={() => setActiveTab('nouvelle-vente')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'nouvelle-vente'
+                ? 'border-indigo-500 text-indigo-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Nouvelle Vente
           </button>
           <button
             onClick={() => setActiveTab('stock')}
@@ -544,46 +621,144 @@ export default function SalesModule() {
             <h3 className="text-lg font-medium text-gray-900">Historique des Ventes</h3>
           </div>
           
+          {/* Statistiques du jour et du mois */}
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Total du jour */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-500">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-sm font-medium text-gray-600">Total du Jour</h4>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {(() => {
+                        const today = new Date().toISOString().split('T')[0];
+                        const todayTotal = salesHistory
+                          .filter(sale => sale.date === today)
+                          .reduce((sum, sale) => sum + (sale.total || 0), 0);
+                        return formatCurrency(todayTotal);
+                      })()}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {salesHistory.filter(sale => sale.date === new Date().toISOString().split('T')[0]).length} vente(s)
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Total du mois */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-600">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-sm font-medium text-gray-600">Total du Mois</h4>
+                    <p className="text-2xl font-bold text-green-600">
+                      {(() => {
+                        const currentMonth = new Date().getMonth();
+                        const currentYear = new Date().getFullYear();
+                        const monthTotal = salesHistory
+                          .filter(sale => {
+                            const saleDate = new Date(sale.date);
+                            return saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear;
+                          })
+                          .reduce((sum, sale) => sum + (sale.total || 0), 0);
+                        return formatCurrency(monthTotal);
+                      })()}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {(() => {
+                        const currentMonth = new Date().getMonth();
+                        const currentYear = new Date().getFullYear();
+                        return salesHistory.filter(sale => {
+                          const saleDate = new Date(sale.date);
+                          return saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear;
+                        }).length;
+                      })()} vente(s)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div className="p-6">
-            {salesHistory.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+                <p className="mt-2 text-gray-500">Chargement des ventes...</p>
+              </div>
+            ) : salesHistory.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 Aucune vente enregistrée
               </div>
             ) : (
               <div className="space-y-4">
-                {salesHistory.map((sale) => (
-                  <div key={sale.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="text-lg font-medium text-gray-900">
-                          {sale.clientName}
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          {new Date(sale.date).toLocaleDateString('fr-FR')} - 
-                          {CLIENT_TYPES[sale.clientType].name}
-                        </p>
+                {salesHistory.map((sale, index) => (
+                  <div key={sale.id} className="border-2 border-gray-200 bg-white rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 border-2 border-green-300">
+                          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-800">
+                            {sale.clientName}
+                          </h4>
+                          <p className="text-sm font-medium text-gray-600">
+                            📅 {new Date(sale.date).toLocaleDateString('fr-FR')} • 
+                            👤 {CLIENT_TYPES[sale.clientType]?.name || 'Particulier'}
+                          </p>
+                        </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-semibold text-gray-900">
+                        <div className={`text-2xl font-bold ${
+                          index % 3 === 0 ? 'text-blue-600' :
+                          index % 3 === 1 ? 'text-green-600' :
+                          'text-purple-600'
+                        }`}>
                           {formatCurrency(sale.total)}
                         </div>
-                        <div className={`text-xs px-2 py-1 rounded-full ${
-                          sale.status === 'Payée' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                        <div className={`text-xs px-3 py-1 rounded-full font-medium ${
+                          sale.status === 'Payée' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
                         }`}>
-                          {sale.status}
+                          {sale.status === 'Payée' ? '✅ Payée' : '⏳ En attente'}
                         </div>
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {sale.items.map((item, index) => (
-                        <div key={index} className="bg-gray-50 p-3 rounded">
-                          <div className="font-medium text-gray-900">{item.name}</div>
-                          <div className="text-sm text-gray-600">
-                            {item.quantity} kg × {formatCurrency(item.price)} = {formatCurrency(item.total)}
+                    <div className="bg-white/70 rounded-lg p-4 backdrop-blur-sm">
+                      <h5 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                        🛒 Articles commandés
+                      </h5>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {sale.items.map((item, itemIndex) => (
+                          <div key={itemIndex} className={`rounded-lg p-3 border-l-4 ${
+                            itemIndex % 4 === 0 ? 'bg-red-50 border-red-400' :
+                            itemIndex % 4 === 1 ? 'bg-yellow-50 border-yellow-400' :
+                            itemIndex % 4 === 2 ? 'bg-green-50 border-green-400' :
+                            'bg-blue-50 border-blue-400'
+                          }`}>
+                            <div className="font-semibold text-gray-800 text-sm">{item.name}</div>
+                            <div className="text-xs text-gray-600 mt-1">
+                              📦 {item.quantity} kg × {formatCurrency(item.price)} = <span className="font-bold">{formatCurrency(item.total)}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ))}
