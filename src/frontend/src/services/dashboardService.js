@@ -50,7 +50,8 @@ export class DashboardService {
    */
   static async getTodaySales() {
     if (!supabase) {
-      return [];
+      // Mode dégradé : récupérer depuis localStorage
+      return this.getLocalSales();
     }
 
     try {
@@ -78,8 +79,10 @@ export class DashboardService {
       return data.map(sale => ({
         id: sale.id,
         client: sale.client_name,
+        clientName: sale.client_name, // Alias pour compatibilité
         phone: sale.client_phone,
         amount: parseFloat(sale.total_amount),
+        total: parseFloat(sale.total_amount), // Alias pour compatibilité
         items: sale.sale_items.length,
         products: sale.sale_items.map(item => ({
           name: item.product_name,
@@ -90,6 +93,8 @@ export class DashboardService {
           hour: '2-digit',
           minute: '2-digit'
         }),
+        date: sale.sale_date || sale.created_at, // Date de la vente
+        clientType: 'particulier', // Valeur par défaut
         status: sale.status || 'completed'
       }));
 
@@ -282,6 +287,122 @@ export class DashboardService {
   static async refreshData() {
     console.log('🔄 Rechargement des données dashboard...');
     return await this.getDashboardData();
+  }
+
+  /**
+   * Récupérer les ventes depuis localStorage (mode dégradé)
+   * @returns {Array} Ventes locales
+   */
+  static getLocalSales() {
+    try {
+      const sales = localStorage.getItem('safem_sales');
+      if (!sales) return [];
+      
+      const parsedSales = JSON.parse(sales);
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Filtrer les ventes d'aujourd'hui
+      return parsedSales
+        .filter(sale => {
+          const saleDate = new Date(sale.created_at || sale.date).toISOString().split('T')[0];
+          return saleDate === today;
+        })
+        .map(sale => ({
+          id: sale.id,
+          client: sale.client_name,
+          phone: sale.client_phone,
+          amount: parseFloat(sale.total_amount),
+          items: sale.items ? sale.items.length : 0,
+          products: sale.items ? sale.items.map(item => ({
+            name: item.product_name,
+            quantity: parseFloat(item.quantity),
+            price: parseFloat(item.unit_price)
+          })) : [],
+          time: new Date(sale.created_at || sale.date).toLocaleTimeString('fr-FR', {
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          status: 'completed'
+        }));
+    } catch (error) {
+      console.error('Erreur lors de la récupération des ventes locales:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Sauvegarder une vente dans localStorage (mode dégradé)
+   * @param {Object} saleData - Données de la vente
+   */
+  static saveLocalSale(saleData) {
+    try {
+      const sales = localStorage.getItem('safem_sales');
+      const parsedSales = sales ? JSON.parse(sales) : [];
+      
+      const newSale = {
+        ...saleData,
+        id: 'local-' + Date.now(),
+        created_at: new Date().toISOString(),
+        date: new Date().toISOString().split('T')[0]
+      };
+      
+      parsedSales.push(newSale);
+      localStorage.setItem('safem_sales', JSON.stringify(parsedSales));
+      
+      console.log('💾 Vente sauvegardée localement:', newSale);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde locale:', error);
+    }
+  }
+
+  /**
+   * Calculer les statistiques depuis localStorage
+   * @param {string} period - Période (today, week, month)
+   * @returns {Object} Statistiques
+   */
+  static getLocalStats(period = 'today') {
+    try {
+      const sales = localStorage.getItem('safem_sales');
+      if (!sales) return { total_sales: 0, total_amount: 0, total_items: 0, avg_sale: 0 };
+      
+      const parsedSales = JSON.parse(sales);
+      const now = new Date();
+      let startDate;
+      
+      switch (period) {
+        case 'today':
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          break;
+        case 'week':
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+          break;
+        case 'month':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        default:
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      }
+      
+      const filteredSales = parsedSales.filter(sale => {
+        const saleDate = new Date(sale.created_at || sale.date);
+        return saleDate >= startDate;
+      });
+      
+      const totalAmount = filteredSales.reduce((sum, sale) => sum + parseFloat(sale.total_amount || 0), 0);
+      const totalItems = filteredSales.reduce((sum, sale) => {
+        return sum + (sale.items ? sale.items.length : 0);
+      }, 0);
+      
+      return {
+        total_sales: filteredSales.length,
+        total_amount: totalAmount,
+        total_items: totalItems,
+        avg_sale: filteredSales.length > 0 ? totalAmount / filteredSales.length : 0
+      };
+    } catch (error) {
+      console.error('Erreur lors du calcul des statistiques locales:', error);
+      return { total_sales: 0, total_amount: 0, total_items: 0, avg_sale: 0 };
+    }
   }
 }
 

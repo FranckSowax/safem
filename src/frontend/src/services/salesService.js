@@ -107,7 +107,29 @@ export class SalesService {
         .limit(limit);
 
       if (error) throw error;
-      return data || [];
+      
+      // Transformer les données pour être compatibles avec le composant
+      return (data || []).map(sale => ({
+        id: sale.id,
+        client: sale.client_name,
+        clientName: sale.client_name,
+        phone: sale.client_phone,
+        amount: parseFloat(sale.total_amount),
+        total: parseFloat(sale.total_amount),
+        items: sale.sale_items.length,
+        products: sale.sale_items.map(item => ({
+          name: item.product_name,
+          quantity: parseFloat(item.quantity),
+          price: parseFloat(item.unit_price)
+        })),
+        time: new Date(sale.created_at).toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        date: sale.sale_date || sale.created_at,
+        clientType: 'particulier', // Valeur par défaut
+        status: sale.status || 'completed'
+      }));
 
     } catch (error) {
       console.error('Erreur lors de la récupération des ventes:', error);

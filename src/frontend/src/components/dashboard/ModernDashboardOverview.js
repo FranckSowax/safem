@@ -198,6 +198,7 @@ export default function ModernDashboardOverview({
         <SalesChart />
       </div>
 
+      {/* Modules opérationnels */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Reminders Card */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
@@ -284,6 +285,86 @@ export default function ModernDashboardOverview({
               </div>
             )) : (
               <p className="text-gray-500 text-sm">Aucune activité</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Modules analytiques */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        {/* Produits les plus vendus */}
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">🏆 Produits les plus vendus</h3>
+          </div>
+          
+          <div className="space-y-3">
+            {recentSales.length > 0 ? (
+              // Calculer les produits les plus vendus
+              Object.entries(
+                recentSales.reduce((acc, sale) => {
+                  if (sale.items && Array.isArray(sale.items)) {
+                    sale.items.forEach(item => {
+                      const productName = item.product_name || item.name || 'Produit inconnu';
+                      const quantity = parseFloat(item.quantity) || 0;
+                      if (!acc[productName]) {
+                        acc[productName] = { name: productName, totalQuantity: 0, sales: 0 };
+                      }
+                      acc[productName].totalQuantity += quantity;
+                      acc[productName].sales += 1;
+                    });
+                  }
+                  return acc;
+                }, {})
+              )
+              .sort((a, b) => b[1].totalQuantity - a[1].totalQuantity)
+              .slice(0, 3)
+              .map(([productName, data], index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-green-600 font-medium text-sm">#{index + 1}</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{data.name}</p>
+                      <p className="text-xs text-gray-500">{data.sales} vente(s)</p>
+                    </div>
+                  </div>
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {data.totalQuantity.toFixed(1)} kg
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm">Aucune donnée disponible</p>
+            )}
+          </div>
+        </div>
+
+        {/* Ventes récentes */}
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">⏰ Ventes récentes</h3>
+          </div>
+          
+          <div className="space-y-3">
+            {recentSales.length > 0 ? recentSales.slice(0, 3).map((sale, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <UserIcon className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">{sale.clientName || sale.client_name || 'Client inconnu'}</p>
+                    <p className="text-xs text-gray-500">{formatDate(sale.date || sale.created_at)}</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  {formatCurrency(sale.total || sale.total_amount || 0)}
+                </span>
+              </div>
+            )) : (
+              <p className="text-gray-500 text-sm">Aucune vente récente</p>
             )}
           </div>
         </div>

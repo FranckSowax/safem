@@ -76,7 +76,14 @@ export default function Dashboard() {
       case 'harvest':
         return <ModernHarvestModule />;
       case 'sales':
-        return <SalesModule data={dashboardData} />;
+        return (
+          <SalesModule 
+            data={dashboardData}
+            recentSales={dashboardData?.recentSales || []}
+            todaySales={dashboardData?.todaySales || []}
+            currentStock={dashboardData?.currentStock || []}
+          />
+        );
       case 'caisse':
         return <CaisseModule />;
       case 'reports':
