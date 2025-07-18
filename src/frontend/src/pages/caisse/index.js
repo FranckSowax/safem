@@ -263,6 +263,16 @@ export default function VintageVirtualCashier() {
       
       console.log('✅ Vente enregistrée avec succès:', savedSale);
       
+      // Diagnostic détaillé pour comprendre pourquoi les articles ne s'affichent plus
+      if (savedSale.success) {
+        console.log('🎯 Vente créée avec ID:', savedSale.data?.id);
+        console.log('📦 Articles envoyés à Supabase:', saleData.items.length);
+        console.log('🔍 Détail des articles:', saleData.items);
+      } else {
+        console.error('❌ Échec de la création de vente:', savedSale.error);
+        console.error('🚨 Message d\'erreur:', savedSale.message);
+      }
+      
       // Préparer les données pour l'affichage du reçu
       const receiptData = {
         id: savedSale.id,
@@ -549,8 +559,8 @@ export default function VintageVirtualCashier() {
 
       {/* Modal d'encaissement */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-md mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="bg-green-600 text-white p-4 rounded-t-lg">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">💰 Encaissement</h3>
