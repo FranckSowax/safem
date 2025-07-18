@@ -275,12 +275,12 @@ export default function VintageVirtualCashier() {
       
       // Préparer les données pour l'affichage du reçu
       const receiptData = {
-        id: savedSale.id,
-        timestamp: savedSale.sale_date || new Date().toISOString(),
-        client: savedSale.client_name,
-        clientPhone: savedSale.client_phone,
+        id: savedSale.success ? savedSale.data?.id : `LOCAL_${Date.now()}`,
+        timestamp: savedSale.success ? savedSale.data?.sale_date || new Date().toISOString() : new Date().toISOString(),
+        client: savedSale.success ? savedSale.data?.client_name : clientName, // Utiliser les données locales comme fallback
+        clientPhone: savedSale.success ? savedSale.data?.client_phone : clientPhone, // Utiliser les données locales comme fallback
         items: cart, // Utiliser les données du panier pour l'affichage
-        total: savedSale.total_amount || cartTotal // Utiliser cartTotal comme fallback
+        total: savedSale.success ? savedSale.data?.total_amount || cartTotal : cartTotal // Utiliser cartTotal comme fallback
       };
       
       console.log('🎫 Données du reçu:', receiptData);

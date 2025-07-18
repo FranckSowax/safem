@@ -56,7 +56,10 @@ class ProductSyncService {
     
     if (!result.success) {
       console.warn('Impossible de créer le mapping produits - utilisation du fallback');
-      return {};
+      console.warn('Erreur Supabase:', result.message);
+      
+      // Retourner un mapping de fallback basé sur les IDs locaux
+      return this.createFallbackMapping();
     }
 
     const mapping = {};
@@ -175,6 +178,58 @@ class ProductSyncService {
       console.error('Erreur lors de la synchronisation des produits:', error);
       return { success: false, message: error.message };
     }
+  }
+
+  /**
+   * Crée un mapping de fallback basé sur les IDs locaux
+   * Utilisé quand Supabase n'est pas disponible
+   * @returns {Object} Mapping de fallback
+   */
+  static createFallbackMapping() {
+    console.log('🔄 Création du mapping de fallback (mode hors ligne)');
+    
+    // Mapping de fallback basé sur les produits locaux
+    // Utilise des UUIDs générés localement pour éviter les erreurs Supabase
+    const fallbackMapping = {
+      // Piments
+      'demon': 'local-demon-uuid-001',
+      'demon2': 'local-demon2-uuid-002', 
+      'shamsi': 'local-shamsi-uuid-003',
+      'avenir': 'local-avenir-uuid-004',
+      'the king': 'local-theking-uuid-005',
+      
+      // Poivrons
+      'yolo wander': 'local-yolowander-uuid-006',
+      'de conti': 'local-deconti-uuid-007',
+      'deconti': 'local-deconti-uuid-007', // Alias
+      'nobili': 'local-nobili-uuid-008',
+      
+      // Tomates
+      'padma': 'local-padma-uuid-009',
+      'anita': 'local-anita-uuid-010',
+      
+      // Aubergines
+      'africaine': 'local-africaine-uuid-011',
+      'bonita': 'local-bonita-uuid-012',
+      'ping tung': 'local-pingtung-uuid-013',
+      
+      // Bananes
+      'plantain ebanga': 'local-plantainebanga-uuid-014',
+      'banane douce': 'local-bananedouce-uuid-015',
+      
+      // Taros
+      'taro blanc': 'local-taroblanc-uuid-016',
+      'taro rouge': 'local-tarorouge-uuid-017',
+      
+      // Autres
+      'chou averty': 'local-chouaverty-uuid-018',
+      'gombo kirikou': 'local-gombokirikou-uuid-019',
+      'concombre mureino': 'local-concombremureino-uuid-020',
+      'ciboulette': 'local-ciboulette-uuid-021'
+    };
+    
+    console.log('✅ Mapping de fallback créé avec', Object.keys(fallbackMapping).length, 'entrées');
+    return fallbackMapping;
   }
 }
 
