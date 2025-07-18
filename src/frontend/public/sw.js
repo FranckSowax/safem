@@ -8,15 +8,14 @@ const CACHE_NAME = 'safem-v1';
 const OFFLINE_URL = '/offline.html';
 
 // Ressources à mettre en cache immédiatement
+// Mise à jour pour éviter les erreurs de cache avec des ressources inexistantes
 const PRECACHE_ASSETS = [
   '/',
-  '/offline.html',
-  '/images/vegetables.jpg',
-  '/images/placeholder-product.jpg',
-  '/images/safem-logo.png',
-  '/favicon.ico',
-  '/css/main.min.css',
-  '/js/main.min.js'
+  '/caisse',
+  '/dashboard',
+  '/favicon.ico'
+  // Suppression des ressources inexistantes qui causaient l'erreur
+  // '/offline.html', '/images/vegetables.jpg', '/css/main.min.css', etc.
 ];
 
 // Installation du service worker
