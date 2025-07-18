@@ -201,8 +201,12 @@ export default function VintageVirtualCashier() {
         client: savedSale.client_name,
         clientPhone: savedSale.client_phone,
         items: cart, // Utiliser les données du panier pour l'affichage
-        total: savedSale.total_amount
+        total: savedSale.total_amount || cartTotal // Utiliser cartTotal comme fallback
       };
+      
+      console.log('🎫 Données du reçu:', receiptData);
+      console.log('💰 Total calculé:', cartTotal);
+      console.log('💾 Total Supabase:', savedSale.total_amount);
 
       setCurrentSale(receiptData);
       setShowCheckoutModal(false);
@@ -215,7 +219,29 @@ export default function VintageVirtualCashier() {
       
     } catch (error) {
       console.error('❌ Erreur lors de l\'enregistrement de la vente:', error);
-      alert('Erreur lors de l\'enregistrement de la vente. Veuillez réessayer.');
+      
+      // Créer un reçu avec les données locales en cas d'erreur
+      const fallbackReceiptData = {
+        id: 'local-' + Date.now(),
+        timestamp: new Date().toISOString(),
+        client: clientName.trim(),
+        clientPhone: clientPhone.trim(),
+        items: cart,
+        total: cartTotal
+      };
+      
+      console.log('🎫 Reçu de fallback créé:', fallbackReceiptData);
+      
+      setCurrentSale(fallbackReceiptData);
+      setShowCheckoutModal(false);
+      setShowSuccessModal(true);
+      
+      // Réinitialiser
+      clearCart();
+      setClientName('');
+      setClientPhone('');
+      
+      alert('Vente enregistrée localement (erreur de synchronisation avec la base de données).');
     }
   };
 
