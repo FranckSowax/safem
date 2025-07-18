@@ -9,46 +9,10 @@ import {
   PrinterIcon
 } from '@heroicons/react/24/outline';
 import { SalesService } from '../../services/salesService';
+import { ProductSyncService } from '../../services/productSyncService';
 
-// Mapping des UUIDs des produits (corrigé avec caractères hexadécimaux valides)
-const PRODUCT_UUID_MAP = {
-  // Piments (1-4)
-  'demon': 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-  'demon2': 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-  'shamsi': 'a1b2c3d4-e5f6-7890-abcd-ef1234567891',
-  'avenir': 'a1b2c3d4-e5f6-7890-abcd-ef1234567892',
-  'theking': 'a1b2c3d4-e5f6-7890-abcd-ef1234567893',
-  
-  // Poivrons (5-7)
-  'yolo': 'b1c2d3e4-f5a6-7890-bcde-fa1234567890',
-  'deconti': 'b1c2d3e4-f5a6-7890-bcde-fa1234567891',
-  'nobili': 'b1c2d3e4-f5a6-7890-bcde-fa1234567892',
-  
-  // Tomates (8-9)
-  'padma': 'c1d2e3f4-a5b6-7890-cdef-ab1234567890',
-  'padma2': 'c1d2e3f4-a5b6-7890-cdef-ab1234567890',
-  'anita': 'c1d2e3f4-a5b6-7890-cdef-ab1234567891',
-  
-  // Aubergines (10-12)
-  'africaine': 'd1e2f3a4-b5c6-7890-defa-bc1234567890',
-  'bonita': 'd1e2f3a4-b5c6-7890-defa-bc1234567891',
-  'pingtung': 'd1e2f3a4-b5c6-7890-defa-bc1234567892',
-  
-  // Bananes (17-18)
-  'plantain': 'e1f2a3b4-c5d6-7890-efab-cd1234567890',
-  'plantain2': 'e1f2a3b4-c5d6-7890-efab-cd1234567890',
-  'douce': 'e1f2a3b4-c5d6-7890-efab-cd1234567891',
-  
-  // Taros (20-21)
-  'blanc': 'f1a2b3c4-d5e6-7890-fabc-de1234567890',
-  'rouge': 'f1a2b3c4-d5e6-7890-fabc-de1234567891',
-  
-  // Autres (13-16)
-  'chou': 'e1f2a3b4-c5d6-7890-efab-cd1234567892',
-  'gombo': 'e1f2a3b4-c5d6-7890-efab-cd1234567893',
-  'concombre': 'e1f2a3b4-c5d6-7890-efab-cd1234567894',
-  'ciboulette': 'e1f2a3b4-c5d6-7890-efab-cd1234567895'
-};
+// Mapping des UUIDs des produits (sera chargé dynamiquement depuis Supabase)
+let PRODUCT_UUID_MAP = {};
 
 // Données des produits basées sur les captures d'écran
 const PRODUCTS_DATA = {
@@ -192,6 +156,26 @@ export default function VintageVirtualCashier() {
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [currentSale, setCurrentSale] = useState(null);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  // Charger le mapping des produits au démarrage
+  useEffect(() => {
+    const loadProductMapping = async () => {
+      console.log('🔄 Chargement du mapping des produits depuis Supabase...');
+      try {
+        const mapping = await ProductSyncService.createProductMapping();
+        PRODUCT_UUID_MAP = mapping;
+        console.log('✅ Mapping des produits chargé:', Object.keys(PRODUCT_UUID_MAP).length, 'entrées');
+      } catch (error) {
+        console.error('❌ Erreur lors du chargement du mapping:', error);
+        console.warn('⚠️ Utilisation du mode dégradé sans mapping UUID');
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+    
+    loadProductMapping();
+  }, []);
 
   // Calculer le total du panier
   const cartTotal = cart.reduce((total, item) => {
