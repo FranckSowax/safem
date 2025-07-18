@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Head from 'next/head';
 import Header from '../components/Header';
 import { 
@@ -149,45 +149,51 @@ const Boutique = () => {
   const [panier, setPanier] = useState([]);
   const [favoris, setFavoris] = useState([]);
 
-  // Filtrer les produits
-  const produitsFiltres = produits.filter(produit => {
-    const matchCategorie = categorieActive === "Tous" || produit.categorie === categorieActive;
-    const matchRecherche = produit.nom.toLowerCase().includes(recherche.toLowerCase()) ||
-                          produit.description.toLowerCase().includes(recherche.toLowerCase());
-    return matchCategorie && matchRecherche;
-  });
+  // Filtrer les produits (mémorisé pour éviter les recalculs)
+  const produitsFiltres = useMemo(() => {
+    return produits.filter(produit => {
+      const matchCategorie = categorieActive === "Tous" || produit.categorie === categorieActive;
+      const matchRecherche = produit.nom.toLowerCase().includes(recherche.toLowerCase()) ||
+                            produit.description.toLowerCase().includes(recherche.toLowerCase());
+      return matchCategorie && matchRecherche;
+    });
+  }, [produits, categorieActive, recherche]);
 
-  // Trier les produits
-  const produitsTriés = [...produitsFiltres].sort((a, b) => {
-    switch(tri) {
-      case "prix":
-        return a.prix - b.prix;
-      case "rating":
-        return b.rating - a.rating;
-      default:
-        return a.nom.localeCompare(b.nom);
-    }
-  });
+  // Trier les produits (mémorisé pour éviter les recalculs)
+  const produitsTriés = useMemo(() => {
+    return [...produitsFiltres].sort((a, b) => {
+      switch(tri) {
+        case "prix":
+          return a.prix - b.prix;
+        case "rating":
+          return b.rating - a.rating;
+        default:
+          return a.nom.localeCompare(b.nom);
+      }
+    });
+  }, [produitsFiltres, tri]);
 
-  // Formater le prix
-  const formatPrix = (prix) => {
+  // Formater le prix (mémorisé pour éviter les recréations)
+  const formatPrix = useCallback((prix) => {
     return new Intl.NumberFormat('fr-FR').format(prix) + ' FCFA';
-  };
+  }, []);
 
-  // Ajouter au panier
-  const ajouterAuPanier = (produit) => {
-    setPanier([...panier, produit]);
+  // Ajouter au panier (mémorisé pour éviter les recréations)
+  const ajouterAuPanier = useCallback((produit) => {
+    setPanier(prevPanier => [...prevPanier, produit]);
     // Ici vous pourriez ajouter une notification toast
-  };
+  }, []);
 
-  // Basculer les favoris
-  const basculerFavori = (produitId) => {
-    if (favoris.includes(produitId)) {
-      setFavoris(favoris.filter(id => id !== produitId));
-    } else {
-      setFavoris([...favoris, produitId]);
-    }
-  };
+  // Basculer les favoris (mémorisé pour éviter les recréations)
+  const basculerFavori = useCallback((produitId) => {
+    setFavoris(prevFavoris => {
+      if (prevFavoris.includes(produitId)) {
+        return prevFavoris.filter(id => id !== produitId);
+      } else {
+        return [...prevFavoris, produitId];
+      }
+    });
+  }, []);
 
   return (
     <>
