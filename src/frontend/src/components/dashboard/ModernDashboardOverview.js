@@ -9,6 +9,10 @@ import {
 } from '@heroicons/react/24/outline';
 import HarvestChart from './charts/HarvestChart';
 import SalesChart from './charts/SalesChart';
+import TopProductsModule from './TopProductsModule';
+import CategoryStatsModule from './CategoryStatsModule';
+import PerformanceStatsModuleFixed from './PerformanceStatsModuleFixed';
+import TopCustomersModule from './TopCustomersModule';
 
 export default function ModernDashboardOverview({ 
   data, 
@@ -292,81 +296,123 @@ export default function ModernDashboardOverview({
 
       {/* Modules analytiques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        {/* Produits les plus vendus */}
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">🏆 Produits les plus vendus</h3>
-          </div>
-          
-          <div className="space-y-3">
-            {recentSales.length > 0 ? (
-              // Calculer les produits les plus vendus
-              Object.entries(
-                recentSales.reduce((acc, sale) => {
-                  if (sale.items && Array.isArray(sale.items)) {
-                    sale.items.forEach(item => {
-                      const productName = item.product_name || item.name || 'Produit inconnu';
-                      const quantity = parseFloat(item.quantity) || 0;
-                      if (!acc[productName]) {
-                        acc[productName] = { name: productName, totalQuantity: 0, sales: 0 };
-                      }
-                      acc[productName].totalQuantity += quantity;
-                      acc[productName].sales += 1;
-                    });
-                  }
-                  return acc;
-                }, {})
-              )
-              .sort((a, b) => b[1].totalQuantity - a[1].totalQuantity)
-              .slice(0, 3)
-              .map(([productName, data], index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <span className="text-green-600 font-medium text-sm">#{index + 1}</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900 text-sm">{data.name}</p>
-                      <p className="text-xs text-gray-500">{data.sales} vente(s)</p>
-                    </div>
-                  </div>
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {data.totalQuantity.toFixed(1)} kg
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-sm">Aucune donnée disponible</p>
-            )}
-          </div>
-        </div>
+        {/* Top Produits Module */}
+        <TopProductsModule />
 
-        {/* Ventes récentes */}
+        {/* Ventes récentes - Version modernisée */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">⏰ Ventes récentes</h3>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-blue-600 text-lg">🛒</span>
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">Ventes Récentes</h3>
+                <p className="text-xs text-gray-500">6 dernières transactions</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm font-medium text-gray-900">{recentSales.length}</div>
+              <div className="text-xs text-gray-500">vente(s)</div>
+            </div>
           </div>
           
-          <div className="space-y-3">
-            {recentSales.length > 0 ? recentSales.slice(0, 3).map((sale, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <UserIcon className="h-5 w-5 text-green-600" />
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {recentSales.length > 0 ? recentSales.slice(0, 6).map((sale, index) => {
+              // Extraire les produits vendus avec vérification de type
+              const saleItems = Array.isArray(sale.sale_items) ? sale.sale_items : 
+                               Array.isArray(sale.items) ? sale.items : [];
+              const productNames = saleItems.map(item => 
+                item.product_name || item.name || 'Produit'
+              ).slice(0, 3); // Limiter à 3 produits max
+              
+              const hasMoreProducts = saleItems.length > 3;
+              const totalItems = saleItems.reduce((sum, item) => sum + (parseFloat(item.quantity) || 0), 0);
+              
+              return (
+                <div key={index} className="group hover:bg-gray-50 p-3 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200">
+                  {/* Header avec client et montant */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                        <UserIcon className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 text-sm">
+                          {sale.clientName || sale.client_name || 'Client inconnu'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {formatDate(sale.date || sale.created_at)} • {totalItems.toFixed(1)} kg
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-semibold text-gray-900 text-sm">
+                        {formatCurrency(sale.total || sale.total_amount || 0)}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        #{(sale.id || index + 1).toString().padStart(3, '0')}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900 text-sm">{sale.clientName || sale.client_name || 'Client inconnu'}</p>
-                    <p className="text-xs text-gray-500">{formatDate(sale.date || sale.created_at)}</p>
-                  </div>
+                  
+                  {/* Extrait des produits vendus */}
+                  {productNames.length > 0 && (
+                    <div className="ml-11 mt-2">
+                      <div className="flex flex-wrap gap-1">
+                        {productNames.map((productName, idx) => (
+                          <span 
+                            key={idx}
+                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                          >
+                            {productName}
+                          </span>
+                        ))}
+                        {hasMoreProducts && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
+                            +{saleItems.length - 3} autre(s)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  {formatCurrency(sale.total || sale.total_amount || 0)}
-                </span>
+              );
+            }) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-gray-400 text-2xl">🛒</span>
+                </div>
+                <p className="text-gray-500 text-sm">Aucune vente récente</p>
+                <p className="text-gray-400 text-xs mt-1">Les ventes apparaîtront ici</p>
               </div>
-            )) : (
-              <p className="text-gray-500 text-sm">Aucune vente récente</p>
             )}
           </div>
+          
+          {/* Footer avec lien vers historique complet */}
+          {recentSales.length > 6 && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <button className="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                Voir toutes les ventes ({recentSales.length})
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Section Statistiques Avancées */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">📊 Statistiques Avancées</h2>
+        
+        {/* Ligne 1: Stats Performance + Répartition Catégories */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <PerformanceStatsModuleFixed />
+          <CategoryStatsModule />
+        </div>
+        
+        {/* Ligne 2: Top Clients */}
+        <div className="grid grid-cols-1 gap-6">
+          <TopCustomersModule />
         </div>
       </div>
     </div>
