@@ -72,26 +72,34 @@ class ProductSyncService {
       mapping[name] = product.id;
       
       // Mapping par mots-clés pour correspondre aux IDs locaux
-      if (name.includes('demon') || name.includes('piment demon')) {
-        mapping['demon'] = product.id;
-        mapping['demon2'] = product.id;
-      }
-      if (name.includes('shamsi')) mapping['shamsi'] = product.id;
-      if (name.includes('avenir')) mapping['avenir'] = product.id;
-      if (name.includes('king') || name.includes('theking')) mapping['theking'] = product.id;
-      
-      if (name.includes('yolo')) mapping['yolo'] = product.id;
-      if (name.includes('conti') || name.includes('de conti')) {
-        mapping['deconti'] = product.id;
-        mapping['de conti'] = product.id;
-      }
-      if (name.includes('nobili')) mapping['nobili'] = product.id;
-      
-      if (name.includes('padma')) {
-        mapping['padma'] = product.id;
-        mapping['padma2'] = product.id;
-      }
-      if (name.includes('anita')) mapping['anita'] = product.id;
+    if (name.includes('demon') || name.includes('piment demon')) {
+      mapping['demon'] = product.id;
+      mapping['demon2'] = product.id;
+    }
+    
+    // Mapping des poivrons - utiliser "Poivron De conti" pour tous les poivrons
+    if (name.includes('conti') || name.includes('de conti')) {
+      mapping['deconti'] = product.id;
+      mapping['de conti'] = product.id;
+      mapping['nobili'] = product.id; // Nobili -> Poivron De conti
+      mapping['yolo'] = product.id; // Yolo Wander -> Poivron De conti
+      mapping['yolo wander'] = product.id;
+    }
+    
+    // Mapping des tomates - utiliser "Tomate Padma" pour toutes les tomates
+    if (name.includes('padma') || name.includes('tomate')) {
+      mapping['padma'] = product.id;
+      mapping['padma2'] = product.id;
+      mapping['anita'] = product.id; // Anita -> Tomate Padma
+    }
+    
+    // Mapping des piments - utiliser "Piment Demon" pour tous les piments
+    if (name.includes('demon') || name.includes('piment')) {
+      mapping['shamsi'] = product.id; // Shamsi -> Piment Demon
+      mapping['avenir'] = product.id; // Avenir -> Piment Demon
+      mapping['theking'] = product.id; // The King -> Piment Demon
+      mapping['the king'] = product.id;
+    }
       
       if (name.includes('africaine')) mapping['africaine'] = product.id;
       if (name.includes('bonita')) mapping['bonita'] = product.id;
