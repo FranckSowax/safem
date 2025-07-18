@@ -639,6 +639,10 @@ export default function VintageVirtualCashier() {
                   <span className="text-sm text-gray-600">Date :</span>
                   <span className="text-sm">{new Date().toLocaleDateString('fr-FR')}</span>
                 </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-600">Heure :</span>
+                  <span className="text-sm">{new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
                 <div className="flex justify-between items-center font-semibold text-lg">
                   <span>TOTAL</span>
                   <span className="text-green-600">{formatPrice(cartTotal)}</span>
@@ -692,7 +696,7 @@ export default function VintageVirtualCashier() {
                   })}
                 </p>
                 <p className="text-sm text-gray-600">
-                  {new Date(currentSale.timestamp).toLocaleTimeString('fr-FR')}
+                  {new Date(currentSale.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
                   Ticket N° {currentSale.id || Math.random().toString(36).substr(2, 9).toUpperCase()}

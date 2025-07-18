@@ -859,6 +859,7 @@ export default function SalesModule({
                           </h4>
                           <p className="text-sm font-medium text-gray-600">
                             📅 {new Date(sale.date).toLocaleDateString('fr-FR')} • 
+                            🕐 {new Date(sale.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} • 
                             👤 {CLIENT_TYPES[sale.clientType]?.name || 'Particulier'}
                           </p>
                         </div>
