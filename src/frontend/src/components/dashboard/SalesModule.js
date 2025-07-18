@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PlusIcon, ShoppingCartIcon, UserIcon, CreditCardIcon } from '@heroicons/react/24/outline';
+import { SalesService } from '../../services/salesService';
 
 const CLIENT_TYPES = {
   particulier: { name: 'Particulier', discount: 0, color: 'blue' },
@@ -79,11 +80,69 @@ export default function SalesModule({
     setAvailableStock(mockStock);
   };
 
-  const loadSalesHistory = () => {
+  const loadSalesHistory = async () => {
     setIsLoading(true);
-    // Utiliser les vraies données du dashboard si disponibles
+    
+    try {
+      console.log('📊 Chargement de l\'historique des ventes depuis Supabase...');
+      
+      // Récupérer les ventes depuis Supabase
+      const salesResult = await SalesService.getAllSales();
+      
+      if (salesResult.success && salesResult.data && Array.isArray(salesResult.data)) {
+        console.log('✅ Ventes récupérées depuis Supabase:', salesResult.data.length, 'ventes');
+        
+        // Transformer les données Supabase pour l'affichage
+        const transformedSales = salesResult.data.map(sale => {
+          // Gestion sécurisée des dates
+          let saleDate;
+          try {
+            if (sale?.sale_date) {
+              const dateObj = new Date(sale.sale_date);
+              saleDate = isNaN(dateObj.getTime()) ? new Date().toISOString().split('T')[0] : dateObj.toISOString().split('T')[0];
+            } else if (sale?.created_at) {
+              const dateObj = new Date(sale.created_at);
+              saleDate = isNaN(dateObj.getTime()) ? new Date().toISOString().split('T')[0] : dateObj.toISOString().split('T')[0];
+            } else {
+              saleDate = new Date().toISOString().split('T')[0];
+            }
+          } catch (error) {
+            console.warn('Erreur de formatage de date:', error);
+            saleDate = new Date().toISOString().split('T')[0];
+          }
+          
+          return {
+            id: sale?.id || Math.random().toString(36),
+            date: saleDate,
+            clientName: sale?.client_name || 'Client inconnu',
+            clientType: 'particulier', // Par défaut
+            phone: sale?.client_phone || '',
+            total: sale?.total_amount || 0,
+            items: Array.isArray(sale?.sale_items) ? sale.sale_items.map(item => ({
+              name: item.product_name || 'Produit inconnu',
+              quantity: item.quantity || 0,
+              price: item.unit_price || 0,
+              total: item.total_price || (item.quantity * item.unit_price) || 0
+            })) : [],
+            status: sale?.status === 'completed' ? 'Payée' : (sale?.status === 'pending' ? 'En attente' : 'Payée'),
+            paymentMethod: sale?.payment_method || 'Espèces'
+          };
+        });
+        
+        setSalesHistory(transformedSales);
+        setIsLoading(false);
+        return;
+      } else {
+        console.warn('⚠️ Aucune vente trouvée dans Supabase ou erreur:', salesResult.message);
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement depuis Supabase:', error);
+    }
+    
+    // Fallback: utiliser les données du dashboard si disponibles
     if (finalRecentSales && Array.isArray(finalRecentSales) && finalRecentSales.length > 0) {
       try {
+        console.log('📋 Utilisation des données du dashboard comme fallback');
         setSalesHistory(finalRecentSales.map(sale => {
           // Gestion sécurisée des dates
           let saleDate;

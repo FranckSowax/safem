@@ -81,6 +81,61 @@ export class SalesService {
   }
 
   /**
+   * Récupérer toutes les ventes avec leurs articles
+   * @param {number} limit - Nombre de ventes à récupérer (optionnel)
+   * @returns {Promise<Object>} Résultat avec les ventes
+   */
+  static async getAllSales(limit = 100) {
+    if (!supabase) {
+      console.warn('Supabase non configuré - retour de données vides');
+      return {
+        success: false,
+        data: [],
+        message: 'Supabase non configuré'
+      };
+    }
+
+    try {
+      // Récupérer les ventes avec leurs articles
+      const { data: sales, error } = await supabase
+        .from('sales')
+        .select(`
+          *,
+          sale_items (
+            *
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Erreur lors de la récupération des ventes:', error);
+        return {
+          success: false,
+          data: [],
+          message: error.message
+        };
+      }
+
+      console.log('✅ Ventes récupérées depuis Supabase:', sales?.length || 0);
+      
+      return {
+        success: true,
+        data: sales || [],
+        message: 'Ventes récupérées avec succès'
+      };
+
+    } catch (error) {
+      console.error('Erreur lors de la récupération des ventes:', error);
+      return {
+        success: false,
+        data: [],
+        message: error.message
+      };
+    }
+  }
+
+  /**
    * Récupérer les ventes récentes
    * @param {number} limit - Nombre de ventes à récupérer
    * @returns {Promise<Array>} Liste des ventes
