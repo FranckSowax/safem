@@ -252,6 +252,12 @@ export default function VintageVirtualCashier() {
         items: cart.map(item => {
           const productUuid = PRODUCT_UUID_MAP[item.id] || item.id;
           console.log(`📦 Mapping produit: ${item.id} -> ${productUuid}`);
+          console.log(`📋 Produit complet:`, item);
+          
+          // Vérifier si l'UUID est valide
+          if (!productUuid || productUuid === item.id) {
+            console.warn(`⚠️ UUID non trouvé pour le produit ${item.id}, utilisation de l'ID comme fallback`);
+          }
           
           return {
             product_id: productUuid,
@@ -263,7 +269,10 @@ export default function VintageVirtualCashier() {
         })
       };
 
-      console.log('💾 Enregistrement de la vente dans Supabase...', saleData);
+      console.log('💾 Enregistrement de la vente dans Supabase...');
+      console.log('📊 Données de vente:', JSON.stringify(saleData, null, 2));
+      console.log('🛒 Panier original:', JSON.stringify(cart, null, 2));
+      console.log('🗂️ Mapping UUID disponible:', Object.keys(PRODUCT_UUID_MAP));
       
       // Enregistrer la vente dans Supabase
       const savedSale = await SalesService.createSale(saleData);
