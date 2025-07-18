@@ -234,14 +234,24 @@ export default function VintageVirtualCashier() {
         sale_date: new Date().toISOString(),
         status: 'paid',
         items: cart.map(item => {
-          const productUuid = PRODUCT_UUID_MAP[item.id] || item.id;
-          console.log(`📦 Mapping produit: ${item.id} -> ${productUuid}`);
+          // Utiliser le nom du produit en minuscules pour le mapping
+          const productKey = item.name.toLowerCase();
+          const productUuid = PRODUCT_UUID_MAP[productKey];
+          
+          console.log(`📦 Mapping produit: "${item.name}" (clé: "${productKey}") -> ${productUuid}`);
           console.log(`📋 Produit complet:`, item);
           
-          // Vérifier si l'UUID est valide
-          if (!productUuid || productUuid === item.id) {
-            console.warn(`⚠️ UUID non trouvé pour le produit ${item.id}, utilisation de l'ID comme fallback`);
+          // Validation UUID : vérifier que c'est un UUID valide (format hexadécimal)
+          const isValidUuid = productUuid && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productUuid);
+          
+          if (!isValidUuid) {
+            console.error(`🚨 ERREUR CRITIQUE: UUID invalide pour "${item.name}" (clé: "${productKey}")`);
+            console.error(`🚨 UUID reçu: "${productUuid}" (type: ${typeof productUuid})`);
+            console.error(`🚨 Mapping disponible:`, Object.keys(PRODUCT_UUID_MAP));
+            throw new Error(`UUID invalide pour le produit "${item.name}". Mapping requis.`);
           }
+          
+          console.log(`✅ UUID valide pour "${item.name}": ${productUuid}`);
           
           return {
             product_id: productUuid,
