@@ -15,7 +15,7 @@ export default function SalesModule({
   todaySales = [], 
   currentStock = [] 
 }) {
-  const [activeTab, setActiveTab] = useState('historique-ventes');
+  const [activeTab, setActiveTab] = useState('historique');
   const [availableStock, setAvailableStock] = useState([]);
   const [saleForm, setSaleForm] = useState({
     date: new Date().toISOString().split('T')[0],
