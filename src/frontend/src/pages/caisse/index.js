@@ -712,12 +712,12 @@ export default function VintageVirtualCashier() {
                             <p className="font-medium text-gray-800">{item.name}</p>
                           </div>
                           <p className="text-gray-600 text-xs ml-5">
-                            Prix unitaire: {formatPrice(item.price)} FCFA/kg
+                            Prix unitaire: {formatPrice(item.price)}/kg
                           </p>
                         </div>
                         <div className="text-right ml-4">
                           <p className="text-sm font-medium">{item.quantity} kg</p>
-                          <p className="font-bold text-green-700">{formatPrice(item.price * item.quantity)} FCFA</p>
+                          <p className="font-bold text-green-700">{formatPrice(item.price * item.quantity)}</p>
                         </div>
                       </div>
                       {index < currentSale.items.length - 1 && (
@@ -736,7 +736,7 @@ export default function VintageVirtualCashier() {
                       <span className="text-green-600 text-lg mr-2">💰</span>
                       <span className="font-bold text-lg text-gray-800">TOTAL À PAYER:</span>
                     </div>
-                    <span className="font-bold text-2xl text-green-700">{formatPrice(currentSale.total)} FCFA</span>
+                    <span className="font-bold text-2xl text-green-700">{formatPrice(currentSale.total)}</span>
                   </div>
                   <div className="text-center mt-2">
                     <p className="text-xs text-gray-600">Montant en Francs CFA</p>
