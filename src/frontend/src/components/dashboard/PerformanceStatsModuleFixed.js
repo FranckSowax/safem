@@ -19,20 +19,38 @@ const PerformanceStatsModuleFixed = ({ period = '30d' }) => {
       setLoading(true);
       setError(null);
       
-      const data = await SalesStatsService.getSalesStats(period);
-      setStats(data);
+      console.log('🔄 Chargement des statistiques de performance...');
+      const result = await SalesStatsService.getSalesStats(period);
+      
+      if (result.success) {
+        console.log('✅ Statistiques chargées:', result.data);
+        setStats(result.data);
+      } else {
+        console.error('❌ Erreur du service:', result.error);
+        setError(result.error);
+        // Fallback avec données simulées
+        setStats({
+          total_sales: 0,
+          total_revenue: 0,
+          total_items_sold: 0,
+          avg_order_value: 0,
+          avg_price_per_kg: 0,
+          avg_quantity_per_sale: 0,
+          sales_per_day: 0
+        });
+      }
     } catch (err) {
-      console.error('Erreur lors du chargement des stats de performance:', err);
+      console.error('❌ Erreur lors du chargement des stats de performance:', err);
       setError(err.message);
-      // Fallback avec données simulées
+      // Fallback avec données vides
       setStats({
-        total_sales: 25,
-        total_revenue: 125000,
-        total_items_sold: 180.5,
-        avg_order_value: 5000,
-        avg_price_per_kg: 692,
-        avg_quantity_per_sale: 7.2,
-        sales_per_day: 1.2
+        total_sales: 0,
+        total_revenue: 0,
+        total_items_sold: 0,
+        avg_order_value: 0,
+        avg_price_per_kg: 0,
+        avg_quantity_per_sale: 0,
+        sales_per_day: 0
       });
     } finally {
       setLoading(false);

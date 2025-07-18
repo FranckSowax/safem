@@ -194,17 +194,49 @@ export class SalesStatsService {
         period: period
       };
 
+      // Variables pour les métriques détaillées
+      let totalPriceForAvg = 0;
+      let totalQuantityForAvg = 0;
+      let itemCount = 0;
+
       sales.forEach(sale => {
         stats.total_revenue += parseFloat(sale.total_amount) || 0;
         
         if (sale.sale_items && Array.isArray(sale.sale_items)) {
           sale.sale_items.forEach(item => {
-            stats.total_items_sold += parseFloat(item.quantity) || 0;
+            const quantity = parseFloat(item.quantity) || 0;
+            const totalPrice = parseFloat(item.total_price) || 0;
+            
+            stats.total_items_sold += quantity;
+            totalPriceForAvg += totalPrice;
+            totalQuantityForAvg += quantity;
+            itemCount++;
           });
         }
       });
 
       stats.avg_order_value = stats.total_sales > 0 ? stats.total_revenue / stats.total_sales : 0;
+      
+      // Calcul des métriques détaillées
+      stats.avg_price_per_kg = stats.total_items_sold > 0 ? stats.total_revenue / stats.total_items_sold : 0;
+      stats.avg_quantity_per_sale = stats.total_sales > 0 ? stats.total_items_sold / stats.total_sales : 0;
+      
+      // Calcul des ventes par jour
+      if (period !== 'all') {
+        const days = parseInt(period.replace('d', ''));
+        stats.sales_per_day = days > 0 ? stats.total_sales / days : 0;
+      } else {
+        // Pour 'all', calculer sur la période réelle des données
+        if (sales.length > 0) {
+          const dates = sales.map(sale => new Date(sale.sale_date)).sort((a, b) => a - b);
+          const firstDate = dates[0];
+          const lastDate = dates[dates.length - 1];
+          const daysDiff = Math.max(1, Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24)));
+          stats.sales_per_day = stats.total_sales / daysDiff;
+        } else {
+          stats.sales_per_day = 0;
+        }
+      }
 
       console.log('✅ Statistiques de ventes calculées:', stats);
       return {
