@@ -2,6 +2,83 @@ import { useState, useEffect } from 'react';
 import { PlusIcon, ShoppingCartIcon, UserIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 import { SalesService } from '../../services/salesService';
 
+// Mapping des icônes de produits (synchronisé avec la caisse virtuelle)
+const PRODUCT_ICONS = {
+  // Piments
+  'Demon': '🌶️',
+  'Piment Demon': '🌶️',
+  'Shamsi': '🌶️',
+  'Avenir': '🌶️',
+  'The King': '🌶️',
+  
+  // Poivrons
+  'Yolo Wander': '🫑',
+  'De Conti': '🫑',
+  'Poivron De conti': '🫑',
+  'Nobili': '🫑',
+  
+  // Tomates
+  'Padma': '🍅',
+  'Tomate Padma': '🍅',
+  'Anita': '🍅',
+  
+  // Aubergines
+  'Africaine': '🍆',
+  'Aubergine Africaine': '🍆',
+  'Bonita': '🍆',
+  'Ping Tung': '🍆',
+  
+  // Bananes
+  'Plantain Ebanga': '🍌',
+  'Banane plantain Ebanga': '🍌',
+  'Banane Douce': '🍌',
+  
+  // Taros
+  'Taro Blanc': '🥔',
+  'Taro blanc': '🥔',
+  'Taro Rouge': '🥔',
+  
+  // Autres
+  'Chou Averty': '🥬',
+  'Chou Aventy': '🥬',
+  'Gombo Kirikou': '🌿',
+  'Concombre Mureino': '🥒',
+  'Concombre Murano': '🥒',
+  'Ciboulette': '🌿'
+};
+
+// Fonction pour obtenir l'icône d'un produit
+const getProductIcon = (productName) => {
+  if (!productName) return '📦';
+  
+  // Recherche exacte
+  if (PRODUCT_ICONS[productName]) {
+    return PRODUCT_ICONS[productName];
+  }
+  
+  // Recherche partielle (insensible à la casse)
+  const lowerName = productName.toLowerCase();
+  for (const [key, icon] of Object.entries(PRODUCT_ICONS)) {
+    if (lowerName.includes(key.toLowerCase()) || key.toLowerCase().includes(lowerName)) {
+      return icon;
+    }
+  }
+  
+  // Fallback par catégorie basé sur des mots-clés
+  if (lowerName.includes('piment') || lowerName.includes('demon')) return '🌶️';
+  if (lowerName.includes('poivron')) return '🫑';
+  if (lowerName.includes('tomate')) return '🍅';
+  if (lowerName.includes('aubergine')) return '🍆';
+  if (lowerName.includes('banane') || lowerName.includes('plantain')) return '🍌';
+  if (lowerName.includes('taro')) return '🥔';
+  if (lowerName.includes('chou')) return '🥬';
+  if (lowerName.includes('gombo') || lowerName.includes('ciboulette')) return '🌿';
+  if (lowerName.includes('concombre')) return '🥒';
+  
+  // Icône par défaut
+  return '📦';
+};
+
 const CLIENT_TYPES = {
   particulier: { name: 'Particulier', discount: 0, color: 'blue' },
   restaurant: { name: 'Restaurant/Hôtel', discount: 5, color: 'green' },
@@ -658,8 +735,11 @@ export default function SalesModule({
                     {saleForm.items.map((item) => (
                       <div key={item.id} className="text-sm text-gray-600">
                         {item.productName && (
-                          <div className="flex justify-between">
-                            <span>{item.productName}</span>
+                          <div className="flex justify-between items-center">
+                            <span className="flex items-center gap-1">
+                              <span className="text-sm">{getProductIcon(item.productName)}</span>
+                              {item.productName}
+                            </span>
                             <span>{item.quantity} × {formatCurrency(item.unitPrice)}</span>
                           </div>
                         )}
@@ -811,9 +891,12 @@ export default function SalesModule({
                             itemIndex % 4 === 2 ? 'bg-green-50 border-green-400' :
                             'bg-blue-50 border-blue-400'
                           }`}>
-                            <div className="font-semibold text-gray-800 text-sm">{item.name}</div>
+                            <div className="font-semibold text-gray-800 text-sm flex items-center gap-2">
+                              <span className="text-lg">{getProductIcon(item.name)}</span>
+                              {item.name}
+                            </div>
                             <div className="text-xs text-gray-600 mt-1">
-                              📦 {item.quantity} kg × {formatCurrency(item.price)} = <span className="font-bold">{formatCurrency(item.total)}</span>
+                              {getProductIcon(item.name)} {item.quantity} kg × {formatCurrency(item.price)} = <span className="font-bold">{formatCurrency(item.total)}</span>
                             </div>
                           </div>
                         ))}
@@ -839,7 +922,10 @@ export default function SalesModule({
               {availableStock.map((product, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-medium text-gray-900">{product.name}</h4>
+                    <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                      <span className="text-lg">{getProductIcon(product.name)}</span>
+                      {product.name}
+                    </h4>
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       product.quality === 'A' ? 'bg-green-100 text-green-800' :
                       product.quality === 'B' ? 'bg-yellow-100 text-yellow-800' :

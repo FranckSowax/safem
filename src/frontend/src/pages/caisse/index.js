@@ -93,6 +93,82 @@ const PRODUCTS_DATA = {
   ]
 };
 
+// Fonction pour obtenir l'icône d'un produit (synchronisée avec SalesModule)
+const getProductIcon = (productName) => {
+  if (!productName) return '📦';
+  
+  const PRODUCT_ICONS = {
+    // Piments
+    'Demon': '🌶️',
+    'Piment Demon': '🌶️',
+    'Shamsi': '🌶️',
+    'Avenir': '🌶️',
+    'The King': '🌶️',
+    
+    // Poivrons
+    'Yolo Wander': '🫑',
+    'De Conti': '🫑',
+    'Poivron De conti': '🫑',
+    'Nobili': '🫑',
+    
+    // Tomates
+    'Padma': '🍅',
+    'Tomate Padma': '🍅',
+    'Anita': '🍅',
+    
+    // Aubergines
+    'Africaine': '🍆',
+    'Aubergine Africaine': '🍆',
+    'Bonita': '🍆',
+    'Ping Tung': '🍆',
+    
+    // Bananes
+    'Plantain Ebanga': '🍌',
+    'Banane plantain Ebanga': '🍌',
+    'Banane Douce': '🍌',
+    
+    // Taros
+    'Taro Blanc': '🥔',
+    'Taro blanc': '🥔',
+    'Taro Rouge': '🥔',
+    
+    // Autres
+    'Chou Averty': '🥬',
+    'Chou Aventy': '🥬',
+    'Gombo Kirikou': '🌿',
+    'Concombre Mureino': '🥒',
+    'Concombre Murano': '🥒',
+    'Ciboulette': '🌿'
+  };
+  
+  // Recherche exacte
+  if (PRODUCT_ICONS[productName]) {
+    return PRODUCT_ICONS[productName];
+  }
+  
+  // Recherche partielle (insensible à la casse)
+  const lowerName = productName.toLowerCase();
+  for (const [key, icon] of Object.entries(PRODUCT_ICONS)) {
+    if (lowerName.includes(key.toLowerCase()) || key.toLowerCase().includes(lowerName)) {
+      return icon;
+    }
+  }
+  
+  // Fallback par catégorie basé sur des mots-clés
+  if (lowerName.includes('piment') || lowerName.includes('demon')) return '🌶️';
+  if (lowerName.includes('poivron')) return '🫑';
+  if (lowerName.includes('tomate')) return '🍅';
+  if (lowerName.includes('aubergine')) return '🍆';
+  if (lowerName.includes('banane') || lowerName.includes('plantain')) return '🍌';
+  if (lowerName.includes('taro')) return '🥔';
+  if (lowerName.includes('chou')) return '🥬';
+  if (lowerName.includes('gombo') || lowerName.includes('ciboulette')) return '🌿';
+  if (lowerName.includes('concombre')) return '🥒';
+  
+  // Icône par défaut
+  return '📦';
+};
+
 // Couleurs par catégorie
 const CATEGORY_COLORS = {
   'Accès Rapide': 'bg-purple-100 border-purple-300',
@@ -588,53 +664,90 @@ export default function VintageVirtualCashier() {
             {/* Ticket de caisse modernisé */}
             <div className="p-6 bg-white" style={{ fontFamily: 'monospace' }}>
               {/* Header du ticket */}
-              <div className="text-center mb-4 pb-3 border-b border-gray-300">
+              <div className="text-center mb-4 pb-3 border-b-2 border-green-600">
                 <div className="flex items-center justify-center mb-2">
-                  <span className="text-green-600 text-xl mr-2">🌱</span>
-                  <h4 className="font-bold text-lg text-gray-800">FERME SAFEM</h4>
+                  <span className="text-green-600 text-2xl mr-2">🌱</span>
+                  <h4 className="font-bold text-xl text-gray-800">FERME SAFEM</h4>
                 </div>
+                <p className="text-xs text-gray-500 mb-1">Agriculture Moderne • Gabon</p>
+                <p className="text-sm text-gray-600 font-medium">
+                  {new Date(currentSale.timestamp).toLocaleDateString('fr-FR', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
                 <p className="text-sm text-gray-600">
-                  {new Date(currentSale.timestamp).toLocaleDateString('fr-FR')} - {new Date(currentSale.timestamp).toLocaleTimeString('fr-FR')}
+                  {new Date(currentSale.timestamp).toLocaleTimeString('fr-FR')}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Ticket N° {currentSale.id || Math.random().toString(36).substr(2, 9).toUpperCase()}
                 </p>
               </div>
               
               {/* Informations client */}
-              <div className="mb-4 pb-3 border-b border-gray-300">
-                <p className="text-sm">
-                  <span className="font-semibold">Client:</span> {currentSale.client}
+              <div className="mb-4 pb-3 border-b border-dashed border-gray-400">
+                <div className="flex items-center mb-1">
+                  <span className="text-blue-600 mr-2">👤</span>
+                  <span className="font-semibold text-sm">INFORMATIONS CLIENT</span>
+                </div>
+                <p className="text-sm ml-6">
+                  <span className="font-medium">Nom:</span> {currentSale.client}
                 </p>
                 {currentSale.clientPhone && (
-                  <p className="text-sm">
-                    <span className="font-semibold">Tél:</span> {currentSale.clientPhone}
+                  <p className="text-sm ml-6">
+                    <span className="font-medium">Téléphone:</span> {currentSale.clientPhone}
                   </p>
                 )}
               </div>
               
               {/* Articles */}
-              <div className="mb-4 pb-3 border-b border-gray-300">
-                {currentSale.items.map((item, index) => (
-                  <div key={index} className="mb-2">
-                    <div className="flex justify-between items-start text-sm">
-                      <div className="flex-1">
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-gray-600 text-xs">
-                          {formatPrice(item.price)}/kg
-                        </p>
+              <div className="mb-4 pb-3 border-b border-dashed border-gray-400">
+                <div className="flex items-center mb-3">
+                  <span className="text-green-600 mr-2">🛒</span>
+                  <span className="font-semibold text-sm">ARTICLES ACHETÉS</span>
+                </div>
+                {currentSale.items.map((item, index) => {
+                  const productIcon = getProductIcon ? getProductIcon(item.name) : '📦';
+                  return (
+                    <div key={index} className="mb-3 ml-6">
+                      <div className="flex justify-between items-start text-sm">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-1 mb-1">
+                            <span className="text-base">{productIcon}</span>
+                            <p className="font-medium text-gray-800">{item.name}</p>
+                          </div>
+                          <p className="text-gray-600 text-xs ml-5">
+                            Prix unitaire: {formatPrice(item.price)} FCFA/kg
+                          </p>
+                        </div>
+                        <div className="text-right ml-4">
+                          <p className="text-sm font-medium">{item.quantity} kg</p>
+                          <p className="font-bold text-green-700">{formatPrice(item.price * item.quantity)} FCFA</p>
+                        </div>
                       </div>
-                      <div className="text-right ml-4">
-                        <p className="text-sm">{item.quantity}kg</p>
-                        <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
-                      </div>
+                      {index < currentSale.items.length - 1 && (
+                        <div className="border-b border-dotted border-gray-300 mt-2"></div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               
               {/* Total */}
-              <div className="mb-4 pb-3 border-b-2 border-gray-800">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-lg">TOTAL:</span>
-                  <span className="font-bold text-xl text-green-600">{formatPrice(currentSale.total)}</span>
+              <div className="mb-4 pb-3 border-b-2 border-green-600">
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <span className="text-green-600 text-lg mr-2">💰</span>
+                      <span className="font-bold text-lg text-gray-800">TOTAL À PAYER:</span>
+                    </div>
+                    <span className="font-bold text-2xl text-green-700">{formatPrice(currentSale.total)} FCFA</span>
+                  </div>
+                  <div className="text-center mt-2">
+                    <p className="text-xs text-gray-600">Montant en Francs CFA</p>
+                  </div>
                 </div>
               </div>
               
