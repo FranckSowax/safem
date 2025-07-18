@@ -221,7 +221,17 @@ export default function VintageVirtualCashier() {
 
   // Formater le prix
   const formatPrice = (price) => {
-    return `${price.toLocaleString()} FCFA`;
+    // Vérifier si le prix est défini et est un nombre
+    if (price === undefined || price === null || isNaN(price)) {
+      return '0 FCFA';
+    }
+    // Convertir en nombre si c'est une chaîne
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    // Vérifier à nouveau après conversion
+    if (isNaN(numPrice)) {
+      return '0 FCFA';
+    }
+    return `${numPrice.toLocaleString()} FCFA`;
   };
 
   // Obtenir tous les produits
