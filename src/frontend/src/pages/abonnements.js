@@ -282,6 +282,68 @@ const AbonnementsPage = () => {
           </p>
         </div>
 
+        {/* Section explicative du processus */}
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Comment ça marche ?</h2>
+            <p className="text-gray-600">Créez votre abonnement en 4 étapes simples</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* Étape 1 */}
+            <div className="group text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-green-200 transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <FiShoppingCart className="text-2xl text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Choisissez vos produits</h3>
+              <p className="text-sm text-gray-600">Sélectionnez vos produits bio préférés par paliers de 0,5 kg selon vos besoins.</p>
+              <div className="mt-3 inline-flex items-center text-green-600 text-sm font-medium">
+                <span className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-2 text-xs font-bold">1</span>
+                Étape 1
+              </div>
+            </div>
+
+            {/* Étape 2 */}
+            <div className="group text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <FiUser className="text-2xl text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Vos informations</h3>
+              <p className="text-sm text-gray-600">Renseignez vos coordonnées et choisissez entre client particulier ou professionnel.</p>
+              <div className="mt-3 inline-flex items-center text-blue-600 text-sm font-medium">
+                <span className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-2 text-xs font-bold">2</span>
+                Étape 2
+              </div>
+            </div>
+
+            {/* Étape 3 */}
+            <div className="group text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-purple-200 transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <FiCalendar className="text-2xl text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Configurez l'abonnement</h3>
+              <p className="text-sm text-gray-600">Choisissez la fréquence de livraison et personnalisez votre abonnement.</p>
+              <div className="mt-3 inline-flex items-center text-purple-600 text-sm font-medium">
+                <span className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-2 text-xs font-bold">3</span>
+                Étape 3
+              </div>
+            </div>
+
+            {/* Étape 4 */}
+            <div className="group text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <FiCheck className="text-2xl text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirmation</h3>
+              <p className="text-sm text-gray-600">Validez votre abonnement et recevez vos produits selon la fréquence choisie.</p>
+              <div className="mt-3 inline-flex items-center text-orange-600 text-sm font-medium">
+                <span className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mr-2 text-xs font-bold">4</span>
+                Étape 4
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Indicateur d'étapes */}
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4">
@@ -302,7 +364,7 @@ const AbonnementsPage = () => {
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-4 space-x-8 text-sm text-gray-600">
+          <div className="flex justify-center mt-4 space-x-4 md:space-x-8 text-xs md:text-sm text-gray-600">
             <span className={currentStep >= 1 ? 'text-green-600 font-semibold' : ''}>Panier</span>
             <span className={currentStep >= 2 ? 'text-green-600 font-semibold' : ''}>Informations</span>
             <span className={currentStep >= 3 ? 'text-green-600 font-semibold' : ''}>Abonnement</span>
@@ -352,7 +414,7 @@ const AbonnementsPage = () => {
                          
                          return (
                            <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                             <div className="flex items-start justify-between mb-3">
+                             <div className="flex flex-col sm:flex-row items-start justify-between mb-3 gap-2">
                                <div className="flex items-center space-x-3">
                                  <span className="text-2xl">
                                    {product.icon}
@@ -362,7 +424,7 @@ const AbonnementsPage = () => {
                                    <p className="text-sm text-gray-500">{product.category}</p>
                                  </div>
                                </div>
-                               <div className="text-right">
+                               <div className="text-left sm:text-right">
                                  <p className="font-semibold text-green-600">
                                    {product.price.toLocaleString('fr-FR')} {product.unit}
                                  </p>
@@ -377,45 +439,45 @@ const AbonnementsPage = () => {
                                Sélection par paliers de {stepQuantity} {product.displayUnit} (min: {product.minQuantity || 0.5} {product.displayUnit})
                              </div>
                              
-                             <div className="flex items-center justify-between">
-                               <div className="flex items-center space-x-2">
-                                 <button
-                                   onClick={() => removeFromCart(product.id)}
-                                   disabled={quantity === 0}
-                                   className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                   title={`Retirer ${stepQuantity} ${product.displayUnit}`}
-                                 >
-                                   <FiMinus className="w-4 h-4" />
-                                 </button>
-                                 
-                                 <div className="flex flex-col items-center min-w-[60px]">
-                                   <span className="font-semibold text-lg">{quantity}</span>
-                                   <span className="text-xs text-gray-500">{product.displayUnit}</span>
-                                 </div>
-                                 
-                                 <button
-                                   onClick={() => addToCart(product)}
-                                   disabled={quantity >= maxQuantity}
-                                   className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                   title={`Ajouter ${stepQuantity} ${product.displayUnit}`}
-                                 >
-                                   <FiPlus className="w-4 h-4" />
-                                 </button>
-                               </div>
-                               
-                               <div className="text-right">
-                                 {quantity > 0 && (
-                                   <>
-                                     <div className="text-sm font-semibold text-green-600">
-                                       {(quantity * product.price).toLocaleString('fr-FR')} FCFA
-                                     </div>
-                                     <div className="text-xs text-gray-500">
-                                       {product.price.toLocaleString('fr-FR')} FCFA/{product.displayUnit}
-                                     </div>
-                                   </>
-                                 )}
-                               </div>
-                             </div>
+                             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                                <div className="flex items-center space-x-2">
+                                  <button
+                                    onClick={() => removeFromCart(product.id)}
+                                    disabled={quantity === 0}
+                                    className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    title={`Retirer ${stepQuantity} ${product.displayUnit}`}
+                                  >
+                                    <FiMinus className="w-4 h-4" />
+                                  </button>
+                                  
+                                  <div className="flex flex-col items-center min-w-[60px]">
+                                    <span className="font-semibold text-lg">{quantity}</span>
+                                    <span className="text-xs text-gray-500">{product.displayUnit}</span>
+                                  </div>
+                                  
+                                  <button
+                                    onClick={() => addToCart(product)}
+                                    disabled={quantity >= maxQuantity}
+                                    className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    title={`Ajouter ${stepQuantity} ${product.displayUnit}`}
+                                  >
+                                    <FiPlus className="w-4 h-4" />
+                                  </button>
+                                </div>
+                                
+                                <div className="text-center sm:text-right">
+                                  {quantity > 0 && (
+                                    <>
+                                      <div className="text-sm font-semibold text-green-600">
+                                        {(quantity * product.price).toLocaleString('fr-FR')} FCFA
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        {product.price.toLocaleString('fr-FR')} FCFA/{product.displayUnit}
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
                            </div>
                          );
                       })}
