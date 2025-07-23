@@ -52,6 +52,9 @@ const Header = () => {
                 <Link href="/boutique" className={`${isActive('/boutique') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] no-underline`}>Boutique</Link>
               </li>
               <li>
+                <Link href="/abonnements" className={`${isActive('/abonnements') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] no-underline`}>Abonnements</Link>
+              </li>
+              <li>
                 <Link href="/about" className={`${isActive('/about') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] no-underline`}>Notre Histoire</Link>
               </li>
               <li>
@@ -115,6 +118,15 @@ const Header = () => {
                     onClick={toggleMenu}
                   >
                     Boutique
+                  </Link>
+                </li>
+                <li className="border-b border-gray-100 pb-3">
+                  <Link 
+                    href="/abonnements" 
+                    className={`${isActive('/abonnements') ? 'text-[#2E7D32]' : 'text-gray-800'} hover:text-[#2E7D32] flex justify-between items-center w-full py-2 font-medium no-underline`}
+                    onClick={toggleMenu}
+                  >
+                    Abonnements
                   </Link>
                 </li>
                 <li className="border-b border-gray-100 pb-3">
