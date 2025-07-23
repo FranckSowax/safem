@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import MainLayout from '../layouts/MainLayout';
 import { FiShoppingCart, FiPlus, FiMinus, FiFilter, FiX, FiCheck } from 'react-icons/fi';
 
@@ -73,6 +74,28 @@ const ProductsPage = () => {
   const [filteredProducts, setFilteredProducts] = useState(getAllProducts());
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
+  
+  // Charger le panier depuis localStorage au montage
+  useEffect(() => {
+    const savedCart = localStorage.getItem('safem_cart');
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (error) {
+        console.error('Erreur lors du chargement du panier:', error);
+        localStorage.removeItem('safem_cart');
+      }
+    }
+  }, []);
+  
+  // Sauvegarder le panier dans localStorage à chaque modification
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem('safem_cart', JSON.stringify(cart));
+    } else {
+      localStorage.removeItem('safem_cart');
+    }
+  }, [cart]);
   
   // États des filtres
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -287,25 +310,17 @@ const ProductsPage = () => {
               </div>
               
               {/* Bouton panier */}
-              <button
-                onClick={() => {
-                  // Pour l'instant, on affiche une alerte. Plus tard, on pourra rediriger vers une page panier
-                  if (cart.length === 0) {
-                    alert('Votre panier est vide. Ajoutez des produits pour continuer.');
-                  } else {
-                    alert(`Panier: ${cart.length} article(s) - Total: ${formatPrice(getCartTotal())}`);
-                  }
-                }}
-                className="relative inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <FiShoppingCart className="mr-2" />
-                Panier
-                {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full">
-                    {cart.length}
-                  </span>
-                )}
-              </button>
+              <Link href="/cart">
+                <button className="relative inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                  <FiShoppingCart className="mr-2" />
+                  Panier
+                  {cart.length > 0 && (
+                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full">
+                      {cart.length}
+                    </span>
+                  )}
+                </button>
+              </Link>
             </div>
 
             {/* Panier flottant (affiché seulement s'il y a des articles) */}
@@ -336,14 +351,13 @@ const ProductsPage = () => {
                   </div>
                 </div>
                 <div className="mt-3 pt-3 border-t border-green-200">
-                  <button
-                    onClick={() => {
-                      alert('Redirection vers la page de commande (à implémenter)');
-                    }}
-                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    Passer commande
-                  </button>
+                  <Link href="/cart">
+                    <button
+                      className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Passer commande
+                    </button>
+                  </Link>
                 </div>
               </div>
             )}
