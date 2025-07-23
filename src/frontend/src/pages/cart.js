@@ -58,37 +58,19 @@ const CartPage = () => {
       async (position) => {
         const { latitude, longitude } = position.coords;
         
-        try {
-          // Utiliser l'API de géocodage inverse pour obtenir l'adresse
-          const response = await fetch(
-            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_API_KEY&language=fr&pretty=1`
-          );
-          
-          if (response.ok) {
-            const data = await response.json();
-            const address = data.results[0]?.formatted || `${latitude}, ${longitude}`;
-            
-            setLocation({
-              latitude,
-              longitude,
-              address
-            });
-          } else {
-            // Fallback si l'API échoue
-            setLocation({
-              latitude,
-              longitude,
-              address: `Coordonnées: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
-            });
-          }
-        } catch (error) {
-          console.error('Erreur lors du géocodage:', error);
-          setLocation({
-            latitude,
-            longitude,
-            address: `Coordonnées: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
-          });
-        }
+        // Générer une adresse simple basée sur les coordonnées
+        // Pas besoin d'API externe - plus robuste et rapide
+        const formatAddress = (lat, lng) => {
+          const latDir = lat >= 0 ? 'N' : 'S';
+          const lngDir = lng >= 0 ? 'E' : 'O';
+          return `Position: ${Math.abs(lat).toFixed(4)}°${latDir}, ${Math.abs(lng).toFixed(4)}°${lngDir}`;
+        };
+        
+        setLocation({
+          latitude,
+          longitude,
+          address: formatAddress(latitude, longitude)
+        });
         
         setGettingLocation(false);
       },
@@ -555,19 +537,37 @@ const CartPage = () => {
                           </div>
                         </div>
                         
-                        {/* Carte interactive avec iframe Google Maps */}
+                        {/* Carte interactive avec iframe Google Maps ou fallback */}
                         <div className="mt-4 h-48 bg-gray-100 rounded-lg relative overflow-hidden border">
-                          <iframe
-                            src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dw901SwHSR3g-0&q=${location.latitude},${location.longitude}&zoom=16&maptype=roadmap`}
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen=""
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                            title="Carte de votre position"
-                            className="rounded-lg"
-                          />
+                          {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY !== 'votre-cle-google-maps-ici' ? (
+                            // Carte Google Maps avec clé API valide
+                            <iframe
+                              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${location.latitude},${location.longitude}&zoom=16&maptype=roadmap`}
+                              width="100%"
+                              height="100%"
+                              style={{ border: 0 }}
+                              allowFullScreen=""
+                              loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
+                              title="Carte de votre position"
+                              className="rounded-lg"
+                            />
+                          ) : (
+                            // Fallback élégant sans clé API
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 text-center p-4">
+                              <div className="mb-4">
+                                <FiMapPin className="text-green-600 text-4xl mx-auto mb-2" />
+                                <div className="text-lg font-semibold text-gray-800 mb-1">Position GPS confirmée</div>
+                                <div className="text-sm text-gray-600 mb-2">{location.address}</div>
+                                <div className="text-xs text-gray-500 font-mono bg-white px-2 py-1 rounded">
+                                  {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
+                                </div>
+                              </div>
+                              <div className="text-xs text-gray-400 max-w-xs">
+                                💡 Configurez NEXT_PUBLIC_GOOGLE_MAPS_API_KEY pour afficher la carte interactive
+                              </div>
+                            </div>
+                          )}
                           
                           {/* Overlay avec informations */}
                           <div className="absolute top-2 left-2 bg-white bg-opacity-90 px-2 py-1 rounded text-xs">

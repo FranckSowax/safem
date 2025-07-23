@@ -208,20 +208,52 @@ const ProductsPage = () => {
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Barre latérale des filtres */}
-          <div className="lg:w-1/4">
-            {/* Bouton mobile pour afficher/masquer les filtres */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden w-full mb-4 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <FiFilter />
-              {showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
-            </button>
+        {/* Filtre par catégorie mobile - toujours visible */}
+        <div className="lg:hidden mb-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+              <FiFilter className="mr-2" />
+              Catégories
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSelectedCategories([])}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  selectedCategories.length === 0
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Toutes
+              </button>
+              {getCategories().map(category => (
+                <button
+                  key={category}
+                  onClick={() => {
+                    if (selectedCategories.includes(category)) {
+                      setSelectedCategories(selectedCategories.filter(c => c !== category));
+                    } else {
+                      setSelectedCategories([...selectedCategories, category]);
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    selectedCategories.includes(category)
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-            {/* Filtres */}
-            <div className={`${showFilters ? 'block' : 'hidden'} lg:block bg-white rounded-lg shadow-sm border border-gray-200 p-6`}>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Barre latérale des filtres - desktop uniquement */}
+          <div className="hidden lg:block lg:w-1/4">
+            {/* Filtres desktop */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <FiFilter className="mr-2" />
                 Filtres

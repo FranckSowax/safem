@@ -8,7 +8,7 @@ import NewsletterForm from './NewsletterForm';
 const Footer = () => {
   return (
     <footer className="text-white relative" style={{
-      backgroundImage: "url('/images/footer banner .jpeg')",
+      backgroundImage: "url('/images/new banner bas .jpg')",
       backgroundSize: "cover",
       backgroundPosition: "center",
       position: "relative",

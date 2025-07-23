@@ -3,6 +3,7 @@ import '../styles/about.css';
 import { AuthProvider } from '../contexts/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
+import Script from 'next/script';
 
 /**
  * Composant principal de l'application Safem
@@ -28,10 +29,19 @@ export default function MyApp({ Component, pageProps }) {
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width" />
         <meta name="theme-color" content="#2E7D32" />
-        <script async src="/register-sw.js"></script>
+
         <link rel="manifest" href="/manifest.json" />
       </Head>
       <Component {...pageProps} />
+      
+      {/* Service Worker - utilisation de next/script au lieu de script tag dans Head */}
+      <Script
+        src="/register-sw.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('Service Worker script chargé');
+        }}
+      />
       <Toaster 
         position="top-right"
         toastOptions={{
