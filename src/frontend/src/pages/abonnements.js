@@ -405,7 +405,8 @@ const AbonnementsPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Liste des produits */}
                   <div className="lg:col-span-2">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Défilement horizontal sur mobile, grille sur desktop */}
+                    <div className="flex overflow-x-auto md:grid md:grid-cols-2 gap-4 pb-4 md:pb-0" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
                        {products.map((product) => {
                          const selectedItem = selectedProducts.find(item => item.product_id === product.id);
                          const quantity = selectedItem ? selectedItem.quantity : 0;
@@ -413,7 +414,7 @@ const AbonnementsPage = () => {
                          const stepQuantity = product.stepQuantity || 0.5;
                          
                          return (
-                           <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                           <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow min-w-[320px] md:min-w-0 flex-shrink-0 md:flex-shrink">
                              <div className="flex flex-col sm:flex-row items-start justify-between mb-3 gap-2">
                                <div className="flex items-center space-x-3">
                                  <span className="text-2xl">

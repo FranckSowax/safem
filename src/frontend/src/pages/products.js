@@ -401,12 +401,12 @@ const ProductsPage = () => {
                 <p className="mt-4 text-gray-600">Chargement des produits...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-4 md:pb-0">
                 {filteredProducts.map((product) => {
                   const cartQuantity = getCartQuantity(product.id);
                   
                   return (
-                    <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow min-w-[280px] md:min-w-0 flex-shrink-0 md:flex-shrink">
                       {/* En-tête du produit */}
                       <div className="text-center mb-4">
                         <div className="text-4xl mb-2">{product.icon}</div>
