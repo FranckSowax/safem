@@ -92,8 +92,8 @@ export default function HomePage() {
   const benefits = useMemo(() => [
     {
       iconName: 'FiLeaf',
-      title: 'Agriculture Biologique',
-      description: 'Produits 100% biologiques, cultivés sans pesticides ni produits chimiques.',
+      title: 'Agriculture Durable',
+      description: 'Produits 100% naturels, cultivés sans pesticides ni produits chimiques.',
       color: '#2E7D32'
     },
     {
@@ -133,7 +133,7 @@ export default function HomePage() {
     {
       name: 'Sylvie Mba',
       role: 'Nutritionniste',
-      content: 'Je recommande SAFEM à tous mes patients pour la qualité bio.',
+      content: 'Je recommande SAFEM à tous mes patients pour la qualité exceptionnelle.',
       rating: 5
     }
   ], []);
@@ -147,8 +147,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <Head>
-        <title>SAFEM - Leader de l'Agriculture Biologique au Gabon</title>
-        <meta name="description" content="SAFEM - Votre partenaire de confiance pour des produits biologiques de qualité supérieure, cultivés avec passion au cœur du Gabon" />
+        <title>SAFEM - Leader de l'Agriculture Durable au Gabon</title>
+        <meta name="description" content="SAFEM - Votre partenaire de confiance pour des produits frais de qualité supérieure, cultivés avec passion au cœur du Gabon" />
         <link rel="icon" href="/favicon.ico" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <style>{`
@@ -293,7 +293,7 @@ export default function HomePage() {
                   Découvrez Notre Production
                 </h2>
                 <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto mb-6 md:mb-8 px-4">
-                  Des produits frais et biologiques cultivés avec passion au cœur du Gabon
+                  Des produits frais et naturels cultivés avec passion au cœur du Gabon
                 </p>
               </div>
 
@@ -381,7 +381,7 @@ export default function HomePage() {
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Économisez jusqu'à 15%</h3>
                   <p className="text-gray-600">
-                    Profitez de tarifs préférentiels sur tous vos produits bio avec nos abonnements.
+                    Profitez de tarifs préférentiels sur tous vos produits avec nos abonnements.
                   </p>
                 </div>
                 
@@ -471,7 +471,7 @@ export default function HomePage() {
                     <li className="flex items-start text-gray-700">
                       <span className="text-blue-500 mr-3 mt-1">✓</span>
                       <div>
-                        <strong>Produits certifiés bio</strong>
+                        <strong>Produits certifiés qualité</strong>
                         <p className="text-sm text-gray-600">Qualité premium pour vos clients</p>
                       </div>
                     </li>
@@ -515,7 +515,7 @@ export default function HomePage() {
                   </h3>
                   <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto drop-shadow-md">
                     Rejoignez plus de 2000 familles gabonaises qui font confiance à SAFEM 
-                    pour leur alimentation bio quotidienne.
+                    pour leur alimentation quotidienne.
                   </p>
                   <div className="flex justify-center">
                     <a href="/abonnements" className="inline-flex items-center px-8 py-4 bg-white text-green-700 rounded-full font-semibold text-lg hover:bg-green-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
@@ -586,7 +586,7 @@ export default function HomePage() {
                     </div>
                     <div className="text-3xl font-bold text-gray-900 mb-2">500+</div>
                     <div className="text-green-600 font-bold mb-1">Hectares Cultivés</div>
-                    <div className="text-sm text-gray-500">En agriculture biologique</div>
+                    <div className="text-sm text-gray-500">En agriculture durable</div>
                   </div>
                 </div>
               </div>
@@ -880,39 +880,115 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Section CTA Final */}
-          <section className="py-20 bg-gradient-to-r from-green-600 to-green-700" id="cta">
-            <div className="max-w-4xl mx-auto px-4 text-center">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Prêt à Découvrir SAFEM ?
-              </h2>
-              <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
-                Rejoignez des milliers de clients satisfaits et découvrez le goût authentique de l'agriculture biologique gabonaise.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link href="/products" className="inline-flex items-center px-8 py-4 bg-white text-green-700 rounded-full font-semibold text-lg hover:bg-green-50 transition-all duration-300 shadow-lg hover:shadow-xl">
-                  Commander maintenant
-                  <span className="ml-2">→</span>
-                </Link>
-                <Link href="/contact" className="inline-flex items-center px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-green-700 transition-all duration-300">
-                  Nous contacter
-                  <span className="ml-2">📞</span>
-                </Link>
+          {/* Section Contact */}
+          <section className="py-20 bg-gray-50" id="contact">
+            <div className="max-w-7xl mx-auto px-4">
+              {/* En-tête de section */}
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center px-6 py-3 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-6">
+                  📍 Nous Localiser
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  Contactez la SAFEM
+                </h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                  Venez découvrir notre ferme et rencontrer nos experts agricoles. Nous sommes là pour répondre à toutes vos questions.
+                </p>
               </div>
-              
-              <div className="flex flex-wrap justify-center items-center gap-8 mt-12 text-green-100">
-                <div className="flex items-center">
-                  <span className="mr-2">📍</span>
-                  <span>Libreville, Gabon</span>
+
+              {/* Contenu à 2 colonnes */}
+              <div className="grid lg:grid-cols-2 gap-12 items-start">
+                {/* Colonne gauche - Carte Google Maps */}
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                  <div className="p-6 bg-gradient-to-r from-green-600 to-green-700">
+                    <h3 className="text-xl font-bold text-white mb-2">Notre Localisation</h3>
+                    <p className="text-green-100">Ferme SAFEM - Agriculture Durable</p>
+                  </div>
+                  <div className="relative">
+                    <iframe 
+                      src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d5153.343345227159!2d9.767809875995308!3d0.4680934995273209!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMMKwMjgnMDUuMSJOIDnCsDQ2JzEzLjQiRQ!5e1!3m2!1sen!2sga!4v1753403489494!5m2!1sen!2sga" 
+                      width="100%" 
+                      height="400" 
+                      style={{ border: 0 }} 
+                      allowFullScreen="" 
+                      loading="lazy" 
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="w-full"
+                    ></iframe>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <span className="mr-2">🕐</span>
-                  <span>Livraison 7j/7</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="mr-2">📞</span>
-                  <span>+241 XX XX XX XX</span>
+
+                {/* Colonne droite - Informations de contact */}
+                <div className="space-y-8">
+                  {/* Informations de contact */}
+                  <div className="bg-white rounded-2xl p-8 shadow-lg">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Informations de Contact</h3>
+                    
+                    <div className="space-y-6">
+                      {/* Adresse */}
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-600 text-xl">📍</span>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Adresse</h4>
+                          <p className="text-gray-600">Ferme SAFEM<br />Meba - Route de Cocobeach,<br />à 9 Km de Ntoum, Gabon</p>
+                        </div>
+                      </div>
+
+                      {/* Téléphone */}
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-600 text-xl">📞</span>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Téléphone</h4>
+                          <p className="text-gray-600">+241 01 23 45 67</p>
+                        </div>
+                      </div>
+
+                      {/* Email */}
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-600 text-xl">✉️</span>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Email</h4>
+                          <p className="text-gray-600">contact@safem.ga</p>
+                        </div>
+                      </div>
+
+                      {/* Horaires */}
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-600 text-xl">🕐</span>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Horaires de visite</h4>
+                          <p className="text-gray-600">
+                            Lundi - Vendredi: 8h00 - 17h00<br />
+                            Samedi: 8h00 - 14h00<br />
+                            Dimanche: Fermé
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bouton d'action */}
+                  <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-8 text-center">
+                    <h3 className="text-2xl font-bold text-white mb-4">Visitez Notre Ferme</h3>
+                    <p className="text-green-100 mb-6">
+                      Découvrez nos méthodes d'agriculture durable et rencontrez nos experts agricoles.
+                    </p>
+                    <button className="inline-flex items-center px-8 py-4 bg-white text-green-700 rounded-full font-semibold text-lg hover:bg-green-50 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+                      🚜 Visiter la Ferme
+                      <span className="ml-2">→</span>
+                    </button>
+                    <p className="text-green-200 text-sm mt-4">
+                      Visite gratuite sur rendez-vous
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -926,7 +1002,7 @@ export default function HomePage() {
               <div>
                 <h3 className="text-xl font-bold mb-4">SAFEM</h3>
                 <p className="text-gray-400 mb-4">
-                  Leader de l'agriculture biologique au Gabon, cultivant l'excellence depuis plus de 15 ans.
+                  Leader de l'agriculture durable au Gabon, cultivant l'excellence depuis plus de 15 ans.
                 </p>
                 <div className="flex space-x-4">
                   <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
