@@ -63,17 +63,21 @@ const CheckoutPage = () => {
     loadCart();
   }, []);
 
-  // Rediriger si le panier est vide
+  // Rediriger si le panier est vide après un délai pour permettre le chargement
   useEffect(() => {
-    if (cart.length === 0) {
-      router.push('/products');
-    }
-  }, [cart, router]);
+    const timer = setTimeout(() => {
+      if (cart.length === 0 && !loading) {
+        router.push('/products');
+      }
+    }, 1000); // Délai de 1 seconde pour permettre le chargement du panier
+    
+    return () => clearTimeout(timer);
+  }, [cart, router, loading]);
 
   // Calculer le total
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Fonction pour obtenir la géolocalisation
+  // Fonction pour obtenir la géolocalisation avec précision améliorée
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       setLocationError('La géolocalisation n\'est pas supportée par ce navigateur.');
@@ -83,22 +87,47 @@ const CheckoutPage = () => {
     setGettingLocation(true);
     setLocationError(null);
 
+    // Options de géolocalisation améliorées
+    const options = {
+      enableHighAccuracy: true, // Haute précision
+      timeout: 10000, // 10 secondes
+      maximumAge: 300000 // Cache de 5 minutes
+    };
+
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
+      async (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
         
         // Formater les coordonnées pour l'affichage
         const formatCoordinate = (coord, isLatitude) => {
           const direction = isLatitude ? (coord >= 0 ? 'N' : 'S') : (coord >= 0 ? 'E' : 'O');
-          return `${Math.abs(coord).toFixed(4)}°${direction}`;
+          return `${Math.abs(coord).toFixed(6)}°${direction}`;
         };
 
-        const formattedAddress = `Position: ${formatCoordinate(latitude, true)}, ${formatCoordinate(longitude, false)}`;
+        // Essayer d'obtenir l'adresse via géocodage inverse
+        let addressInfo = `Position: ${formatCoordinate(latitude, true)}, ${formatCoordinate(longitude, false)}`;
+        
+        try {
+          // Géocodage inverse avec Nominatim (OpenStreetMap)
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+          );
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.display_name) {
+              addressInfo = data.display_name;
+            }
+          }
+        } catch (err) {
+          console.log('Géocodage inverse non disponible, utilisation des coordonnées');
+        }
 
         setLocation({
           latitude,
           longitude,
-          address: formattedAddress
+          address: addressInfo,
+          accuracy: Math.round(accuracy)
         });
         setGettingLocation(false);
       },
@@ -109,10 +138,10 @@ const CheckoutPage = () => {
             errorMessage = 'Autorisation de géolocalisation refusée. Veuillez l\'activer dans les paramètres de votre navigateur.';
             break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Position indisponible. Vérifiez votre connexion.';
+            errorMessage = 'Position indisponible. Vérifiez votre connexion et que la géolocalisation est activée.';
             break;
           case error.TIMEOUT:
-            errorMessage = 'Délai d\'attente dépassé pour la géolocalisation.';
+            errorMessage = 'Délai d\'attente dépassé. Vérifiez votre connexion et réessayez.';
             break;
           default:
             errorMessage = 'Erreur inconnue lors de la géolocalisation.';
@@ -427,25 +456,57 @@ const CheckoutPage = () => {
                   </div>
                 )}
 
-                {/* Carte simple avec coordonnées */}
+                {/* Carte interactive améliorée avec informations détaillées */}
                 {location.latitude && location.longitude && (
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                     <div className="flex items-start space-x-3">
                       <FiMapPin className="text-green-600 mt-1 flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-green-900 mb-1">Position détectée</p>
-                        <p className="text-sm text-green-700">{location.address}</p>
-                        
-                        {/* Carte intégrée simple */}
-                        <div className="mt-3 bg-white rounded-lg border border-green-200 overflow-hidden">
-                          <iframe
-                            width="100%"
-                            height="200"
-                            frameBorder="0"
-                            src={`https://www.openstreetmap.org/export/embed.html?bbox=${location.longitude-0.01}%2C${location.latitude-0.01}%2C${location.longitude+0.01}%2C${location.latitude+0.01}&layer=mapnik&marker=${location.latitude}%2C${location.longitude}`}
-                            style={{ border: 0 }}
-                          />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-sm font-medium text-green-900">Position détectée</p>
+                          {location.accuracy && (
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                              Précision: ±{location.accuracy}m
+                            </span>
+                          )}
                         </div>
+                        <p className="text-sm text-green-700 mb-3 break-words">{location.address}</p>
+                        
+                        {/* Carte intégrée améliorée */}
+                        <div className="bg-white rounded-lg border border-green-200 overflow-hidden shadow-sm">
+                          <div className="relative">
+                            <iframe
+                              width="100%"
+                              height="250"
+                              frameBorder="0"
+                              src={`https://www.openstreetmap.org/export/embed.html?bbox=${location.longitude-0.005}%2C${location.latitude-0.005}%2C${location.longitude+0.005}%2C${location.latitude+0.005}&layer=mapnik&marker=${location.latitude}%2C${location.longitude}`}
+                              style={{ border: 0 }}
+                              title="Carte de votre position"
+                            />
+                            {/* Overlay avec lien vers la carte complète */}
+                            <div className="absolute bottom-2 right-2">
+                              <a
+                                href={`https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}&zoom=16`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white bg-opacity-90 hover:bg-opacity-100 text-xs text-blue-600 px-2 py-1 rounded shadow-sm transition-all"
+                              >
+                                Voir sur la carte ↗️
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Informations techniques (coordonnées) */}
+                        <details className="mt-3">
+                          <summary className="text-xs text-green-600 cursor-pointer hover:text-green-800 transition-colors">
+                            Coordonnées techniques
+                          </summary>
+                          <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded font-mono">
+                            Latitude: {location.latitude.toFixed(6)}°<br/>
+                            Longitude: {location.longitude.toFixed(6)}°
+                          </div>
+                        </details>
                       </div>
                     </div>
                   </div>

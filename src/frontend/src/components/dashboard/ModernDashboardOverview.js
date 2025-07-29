@@ -13,6 +13,7 @@ import TopProductsModule from './TopProductsModule';
 import CategoryStatsModule from './CategoryStatsModule';
 import PerformanceStatsModuleFixed from './PerformanceStatsModuleFixed';
 import TopCustomersModule from './TopCustomersModule';
+import BoutiqueModule from './BoutiqueModule';
 
 export default function ModernDashboardOverview({ 
   data, 

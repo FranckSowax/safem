@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Header from '../components/Header';
+import MainLayout from '../layouts/MainLayout';
+import { supabase } from '../lib/supabaseClient';
 import { 
   FiShoppingCart, 
   FiHeart, 
@@ -11,153 +13,123 @@ import {
   FiList,
   FiTruck,
   FiShield,
-  FiRefreshCw
+  FiRefreshCw,
+  FiMapPin,
+  FiUsers,
+  FiZap,
+  FiCheck,
+  FiChevronDown,
+  FiLoader
 } from 'react-icons/fi';
 
-// Données des produits de matériel agricole
-const produitsAgricoles = [
-  {
-    id: 1,
-    nom: "Tracteur Compact 25HP",
-    prix: 15500000,
-    prixOriginal: 17000000,
-    image: "/images/tracteur-compact.jpg",
-    categorie: "Tracteurs",
-    description: "Tracteur compact idéal pour les petites et moyennes exploitations. Moteur diesel 25HP, transmission hydrostatique.",
-    stock: 5,
-    rating: 4.8,
-    reviews: 24,
-    promo: true,
-    nouveau: false,
-    tags: ["Diesel", "Compact", "25HP"]
-  },
-  {
-    id: 2,
-    nom: "Motoculteur Professionnel",
-    prix: 850000,
-    prixOriginal: null,
-    image: "/images/motoculteur.jpg",
-    categorie: "Motoculteurs",
-    description: "Motoculteur robuste avec fraise arrière, parfait pour le travail du sol. Moteur 4 temps 7HP.",
-    stock: 12,
-    rating: 4.6,
-    reviews: 18,
-    promo: false,
-    nouveau: true,
-    tags: ["7HP", "4 temps", "Fraise"]
-  },
-  {
-    id: 3,
-    nom: "Pulvérisateur à Dos 20L",
-    prix: 45000,
-    prixOriginal: 55000,
-    image: "/images/pulverisateur.jpg",
-    categorie: "Pulvérisateurs",
-    description: "Pulvérisateur à dos professionnel 20L avec pompe à pression, idéal pour les traitements phytosanitaires.",
-    stock: 25,
-    rating: 4.4,
-    reviews: 32,
-    promo: true,
-    nouveau: false,
-    tags: ["20L", "Pression", "Professionnel"]
-  },
-  {
-    id: 4,
-    nom: "Semeuse de Précision",
-    prix: 1200000,
-    prixOriginal: null,
-    image: "/images/semeuse.jpg",
-    categorie: "Semoirs",
-    description: "Semeuse de précision pour cultures maraîchères. Réglage facile de l'espacement et de la profondeur.",
-    stock: 8,
-    rating: 4.7,
-    reviews: 15,
-    promo: false,
-    nouveau: true,
-    tags: ["Précision", "Maraîchage", "Réglable"]
-  },
-  {
-    id: 5,
-    nom: "Pompe d'Irrigation Solaire",
-    prix: 2500000,
-    prixOriginal: 2800000,
-    image: "/images/pompe-solaire.jpg",
-    categorie: "Irrigation",
-    description: "Système de pompage solaire complet pour irrigation. Panneau 400W, pompe submersible 1HP.",
-    stock: 3,
-    rating: 4.9,
-    reviews: 12,
-    promo: true,
-    nouveau: false,
-    tags: ["Solaire", "400W", "1HP"]
-  },
-  {
-    id: 6,
-    nom: "Broyeur de Végétaux",
-    prix: 650000,
-    prixOriginal: null,
-    image: "/images/broyeur.jpg",
-    categorie: "Broyeurs",
-    description: "Broyeur de végétaux électrique pour compostage. Moteur 2200W, capacité de coupe 40mm.",
-    stock: 7,
-    rating: 4.3,
-    reviews: 21,
-    promo: false,
-    nouveau: false,
-    tags: ["2200W", "40mm", "Électrique"]
-  },
-  {
-    id: 7,
-    nom: "Serre Tunnel 6x3m",
-    prix: 180000,
-    prixOriginal: 220000,
-    image: "/images/serre-tunnel.jpg",
-    categorie: "Serres",
-    description: "Serre tunnel professionnelle 6x3m. Structure galvanisée, bâche renforcée 200 microns.",
-    stock: 15,
-    rating: 4.5,
-    reviews: 28,
-    promo: true,
-    nouveau: false,
-    tags: ["6x3m", "Galvanisé", "200µ"]
-  },
-  {
-    id: 8,
-    nom: "Tondeuse Autoportée",
-    prix: 3200000,
-    prixOriginal: null,
-    image: "/images/tondeuse-autoportee.jpg",
-    categorie: "Tondeuses",
-    description: "Tondeuse autoportée professionnelle. Moteur 18HP, largeur de coupe 107cm, bac de ramassage 300L.",
-    stock: 4,
-    rating: 4.8,
-    reviews: 19,
-    promo: false,
-    nouveau: true,
-    tags: ["18HP", "107cm", "300L"]
-  }
-];
-
-const categories = ["Tous", "Tracteurs", "Motoculteurs", "Pulvérisateurs", "Semoirs", "Irrigation", "Broyeurs", "Serres", "Tondeuses"];
+// Fonction pour formater le prix
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
+};
 
 const Boutique = () => {
-  const [produits, setProduits] = useState(produitsAgricoles);
-  const [categorieActive, setCategorieActive] = useState("Tous");
+  const router = useRouter();
+  const [produits, setProduits] = useState([]);
+  const [typesAgriculture, setTypesAgriculture] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [marques, setMarques] = useState([]);
+  const [typeAgricultureActif, setTypeAgricultureActif] = useState("Tous");
+  const [categorieActive, setCategorieActive] = useState("Toutes");
   const [recherche, setRecherche] = useState("");
-  const [affichage, setAffichage] = useState("grid"); // grid ou list
-  const [tri, setTri] = useState("nom"); // nom, prix, rating
+  const [affichage, setAffichage] = useState("grid");
+  const [tri, setTri] = useState("nom");
   const [panier, setPanier] = useState([]);
   const [favoris, setFavoris] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filtres, setFiltres] = useState({
+    prixMin: 0,
+    prixMax: 20000000
+  });
+
+  // Charger les données depuis Supabase
+  useEffect(() => {
+    const chargerDonnees = async () => {
+      try {
+        setLoading(true);
+        
+        // Charger les types d'agriculture
+        const { data: typesData, error: typesError } = await supabase
+          .from('types_agriculture')
+          .select('*')
+          .eq('actif', true)
+          .order('ordre');
+        
+        if (typesError) throw typesError;
+        setTypesAgriculture([{ id: 'tous', nom: 'Tous', icone: '🌱' }, ...typesData]);
+        
+
+        
+        // Charger toutes les catégories
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('categories_produits')
+          .select(`
+            *,
+            types_agriculture(nom, icone)
+          `)
+          .eq('actif', true)
+          .order('ordre');
+        
+        if (categoriesError) throw categoriesError;
+        setCategories(categoriesData || []);
+        
+        // Charger les produits avec leurs relations
+        const { data: produitsData, error: produitsError } = await supabase
+          .from('produits')
+          .select(`
+            *,
+            categories_produits(nom, types_agriculture(nom, icone))
+          `)
+          .eq('actif', true)
+          .order('created_at', { ascending: false });
+        
+        if (produitsError) throw produitsError;
+        setProduits(produitsData || []);
+        
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    chargerDonnees();
+  }, []);
+
+  // Réinitialiser la catégorie quand le type d'agriculture change
+  useEffect(() => {
+    setCategorieActive("Toutes");
+  }, [typeAgricultureActif]);
+
+  // Filtrer les catégories selon le type d'agriculture sélectionné
+  const categoriesFiltrees = useMemo(() => {
+    if (typeAgricultureActif === "Tous") {
+      return [{ id: 'toutes', nom: 'Toutes' }, ...categories];
+    }
+    const categoriesType = categories.filter(cat => 
+      cat.types_agriculture?.nom === typeAgricultureActif
+    );
+    return [{ id: 'toutes', nom: 'Toutes' }, ...categoriesType];
+  }, [categories, typeAgricultureActif]);
 
   // Filtrer les produits (mémorisé pour éviter les recalculs)
   const produitsFiltres = useMemo(() => {
     return produits.filter(produit => {
-      const matchCategorie = categorieActive === "Tous" || produit.categorie === categorieActive;
+      const matchTypeAgriculture = typeAgricultureActif === "Tous" || 
+        (produit.categories_produits?.types_agriculture?.nom === typeAgricultureActif);
+      const matchCategorie = categorieActive === "Toutes" ||
+        (produit.categories_produits?.nom === categorieActive);
       const matchRecherche = produit.nom.toLowerCase().includes(recherche.toLowerCase()) ||
                             produit.description.toLowerCase().includes(recherche.toLowerCase());
-      return matchCategorie && matchRecherche;
+      const matchPrix = produit.prix >= filtres.prixMin && produit.prix <= filtres.prixMax;
+      
+      return matchTypeAgriculture && matchCategorie && matchRecherche && matchPrix;
     });
-  }, [produits, categorieActive, recherche]);
+  }, [produits, typeAgricultureActif, categorieActive, recherche, filtres]);
 
   // Trier les produits (mémorisé pour éviter les recalculs)
   const produitsTriés = useMemo(() => {
@@ -172,11 +144,6 @@ const Boutique = () => {
       }
     });
   }, [produitsFiltres, tri]);
-
-  // Formater le prix (mémorisé pour éviter les recréations)
-  const formatPrix = useCallback((prix) => {
-    return new Intl.NumberFormat('fr-FR').format(prix) + ' FCFA';
-  }, []);
 
   // Ajouter au panier (mémorisé pour éviter les recréations)
   const ajouterAuPanier = useCallback((produit) => {
@@ -196,286 +163,309 @@ const Boutique = () => {
   }, []);
 
   return (
-    <>
+    <MainLayout>
       <Head>
-        <title>Boutique Matériel Agricole - SAFEM</title>
-        <meta name="description" content="Découvrez notre gamme complète de matériel agricole professionnel. Tracteurs, motoculteurs, pulvérisateurs et plus encore." />
-        <meta name="keywords" content="matériel agricole, tracteur, motoculteur, pulvérisateur, irrigation, SAFEM" />
+        <title>Boutique Pro - SAFEM</title>
+        <meta name="description" content="Boutique professionnelle SAFEM - Matériel agricole de qualité pour votre exploitation" />
+        <meta name="keywords" content="boutique pro, matériel agricole, tracteur, motoculteur, SAFEM" />
       </Head>
 
-      <Header />
+      {/* Header avec notification */}
+      <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+        <div className="flex items-center">
+          <FiCheck className="text-green-400 mr-3" />
+          <p className="text-green-700 font-medium">Soyez notifié pour les meilleurs prix</p>
+        </div>
+      </div>
 
-      <main className="min-h-screen bg-gray-50">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-[#2E7D32] to-[#4CAF50] text-white py-16">
-          <div className="container-custom text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Boutique Matériel Agricole
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90">
-              Équipez votre exploitation avec du matériel professionnel de qualité
-            </p>
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <FiTruck className="text-yellow-300" />
-                <span>Livraison gratuite dès 500 000 FCFA</span>
+      {/* Layout principal avec sidebar et contenu */}
+      <div className="flex flex-col lg:flex-row gap-6 p-6 bg-gray-50 min-h-screen">
+        {/* Sidebar des filtres */}
+        <div className="lg:w-1/4 space-y-6">
+          {/* Filtre Type d'agriculture */}
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="font-semibold text-gray-900 mb-4">Type d'agriculture</h3>
+            {loading ? (
+              <div className="flex items-center justify-center py-4">
+                <FiLoader className="animate-spin text-green-600" />
               </div>
-              <div className="flex items-center gap-2">
-                <FiShield className="text-yellow-300" />
-                <span>Garantie constructeur</span>
+            ) : (
+              <div className="space-y-3">
+                {typesAgriculture.map((type) => (
+                  <label key={type.id} className="flex items-center cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="typeAgriculture"
+                      checked={typeAgricultureActif === type.nom}
+                      onChange={() => setTypeAgricultureActif(type.nom)}
+                      className="rounded border-gray-300 text-green-600 focus:ring-green-500" 
+                    />
+                    <span className="ml-2 text-gray-700 flex items-center">
+                      <span className="mr-2">{type.icone}</span>
+                      {type.nom}
+                    </span>
+                  </label>
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <FiRefreshCw className="text-yellow-300" />
-                <span>SAV professionnel</span>
-              </div>
-            </div>
+            )}
           </div>
-        </section>
 
-        {/* Filtres et Recherche */}
-        <section className="bg-white border-b border-gray-200 py-6">
-          <div className="container-custom">
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-              {/* Barre de recherche */}
-              <div className="relative flex-1 max-w-md">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+
+
+          {/* Filtre Catégories de matériel */}
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="font-semibold text-gray-900 mb-4">Catégories de matériel</h3>
+            {loading ? (
+              <div className="flex items-center justify-center py-4">
+                <FiLoader className="animate-spin text-green-600" />
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-48 overflow-y-auto">
+                {categoriesFiltrees.map((categorie) => (
+                  <label key={categorie.id} className="flex items-center cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="categorie"
+                      checked={categorieActive === categorie.nom}
+                      onChange={() => {
+                        setCategorieActive(categorie.nom);
+                      }}
+                      className="rounded border-gray-300 text-green-600 focus:ring-green-500" 
+                    />
+                    <span className="ml-2 text-gray-700">{categorie.nom}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+            {categoriesFiltrees.length > 8 && (
+              <div className="text-sm text-gray-500 mt-2">
+                {categoriesFiltrees.length - 1} catégories disponibles
+              </div>
+            )}
+          </div>
+
+          {/* Filtre Prix */}
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="font-semibold text-gray-900 mb-4">Gamme de prix</h3>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-4 h-4 bg-green-600 rounded-full"></div>
+                <div className="flex-1 h-2 bg-gray-200 rounded relative">
+                  <div className="absolute left-0 top-0 h-2 bg-green-600 rounded" style={{width: '30%'}}></div>
+                  <div className="absolute right-0 top-0 h-2 bg-green-600 rounded" style={{width: '20%'}}></div>
+                </div>
+                <div className="w-4 h-4 bg-green-600 rounded-full"></div>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>{formatPrice(filtres.prixMin)}</span>
+                <span>{formatPrice(filtres.prixMax)}</span>
+              </div>
+              <div className="space-y-2">
                 <input
-                  type="text"
-                  placeholder="Rechercher un produit..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E7D32] focus:border-transparent"
-                  value={recherche}
-                  onChange={(e) => setRecherche(e.target.value)}
+                  type="range"
+                  min="0"
+                  max="20000000"
+                  step="100000"
+                  value={filtres.prixMin}
+                  onChange={(e) => setFiltres(prev => ({ ...prev, prixMin: parseInt(e.target.value) }))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="20000000"
+                  step="100000"
+                  value={filtres.prixMax}
+                  onChange={(e) => setFiltres(prev => ({ ...prev, prixMax: parseInt(e.target.value) }))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
               </div>
-
-              {/* Filtres */}
-              <div className="flex flex-wrap gap-4 items-center">
-                {/* Catégories */}
-                <div className="flex gap-2 flex-wrap">
-                  {categories.map(categorie => (
-                    <button
-                      key={categorie}
-                      onClick={() => setCategorieActive(categorie)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                        categorieActive === categorie
-                          ? 'bg-[#2E7D32] text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      {categorie}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Tri */}
-                <select
-                  value={tri}
-                  onChange={(e) => setTri(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E7D32] focus:border-transparent"
-                >
-                  <option value="nom">Trier par nom</option>
-                  <option value="prix">Trier par prix</option>
-                  <option value="rating">Trier par note</option>
-                </select>
-
-                {/* Mode d'affichage */}
-                <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-                  <button
-                    onClick={() => setAffichage("grid")}
-                    className={`p-2 ${affichage === "grid" ? 'bg-[#2E7D32] text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    <FiGrid />
-                  </button>
-                  <button
-                    onClick={() => setAffichage("list")}
-                    className={`p-2 ${affichage === "list" ? 'bg-[#2E7D32] text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    <FiList />
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
-        </section>
 
-        {/* Produits */}
-        <section className="py-12">
-          <div className="container-custom">
-            <div className="mb-6">
+
+        </div>
+
+        {/* Contenu principal */}
+        <div className="lg:w-3/4">
+          {/* En-tête avec compteur et tri */}
+          <div className="bg-white rounded-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
               <p className="text-gray-600">
-                {produitsTriés.length} produit{produitsTriés.length > 1 ? 's' : ''} trouvé{produitsTriés.length > 1 ? 's' : ''}
+                {loading ? (
+                  <span className="flex items-center">
+                    <FiLoader className="animate-spin mr-2" />
+                    Chargement des produits...
+                  </span>
+                ) : (
+                  <span>
+                    {produitsTriés.length} produit{produitsTriés.length > 1 ? 's' : ''} trouvé{produitsTriés.length > 1 ? 's' : ''}
+                    {typeAgricultureActif !== "Tous" && (
+                      <span className="ml-2 text-green-600 font-medium">en {typeAgricultureActif}</span>
+                    )}
+                  </span>
+                )}
               </p>
             </div>
+            <div className="flex items-center space-x-4">
+              <select
+                value={tri}
+                onChange={(e) => setTri(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="nom">Trier par nom</option>
+                <option value="prix">Trier par prix</option>
+                <option value="rating">Trier par note</option>
+              </select>
+            </div>
+          </div>
 
-            <div className={`grid gap-6 ${
-              affichage === "grid" 
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-                : "grid-cols-1"
-            }`}>
-              {produitsTriés.map(produit => (
-                <div key={produit.id} className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow ${
-                  affichage === "list" ? "flex gap-6" : ""
-                }`}>
-                  {/* Image */}
-                  <div className={`relative ${affichage === "list" ? "w-48 h-48 flex-shrink-0" : "aspect-square"}`}>
-                    <img
-                      src={produit.image}
-                      alt={produit.nom}
-                      className="w-full h-full object-cover rounded-t-lg"
-                      onError={(e) => {
-                        e.target.src = "/images/placeholder-product.jpg";
-                      }}
-                    />
-                    
-                    {/* Badges */}
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {/* Cartes produits */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <FiLoader className="animate-spin text-green-600 text-2xl" />
+              <span className="ml-3 text-gray-600">Chargement des produits...</span>
+            </div>
+          ) : produitsTriés.length === 0 ? (
+            <div className="bg-white rounded-lg p-8 text-center">
+              <p className="text-gray-500 text-lg">Aucun produit trouvé pour les critères sélectionnés.</p>
+              <button 
+                onClick={() => {
+                  setTypeAgricultureActif("Tous");
+                  setCategorieActive("Toutes");
+                  setRecherche("");
+                  setFiltres({
+                    prixMin: 0,
+                    prixMax: 20000000
+                  });
+                }}
+                className="mt-4 text-green-600 hover:text-green-700 font-medium"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {produitsTriés.map((produit) => (
+                <div key={produit.id} className="bg-white rounded-lg shadow-sm p-6 flex flex-col md:flex-row gap-6">
+                  <div className="md:w-1/3">
+                    <div className="relative">
+                      <img 
+                        src={produit.image_url || '/api/placeholder/300/200'} 
+                        alt={produit.nom} 
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                      <div className="absolute top-3 left-3 bg-orange-500 text-white px-2 py-1 rounded text-sm font-medium">
+                        {produit.stock} en stock
+                      </div>
                       {produit.promo && (
-                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
                           PROMO
-                        </span>
+                        </div>
                       )}
                       {produit.nouveau && (
-                        <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="absolute top-12 right-3 bg-blue-500 text-white px-2 py-1 rounded text-sm font-medium">
                           NOUVEAU
-                        </span>
+                        </div>
                       )}
                     </div>
-
-                    {/* Bouton favori */}
-                    <button
-                      onClick={() => basculerFavori(produit.id)}
-                      className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
-                    >
-                      <FiHeart className={`${favoris.includes(produit.id) ? 'text-red-500 fill-current' : 'text-gray-400'}`} />
-                    </button>
                   </div>
-
-                  {/* Contenu */}
-                  <div className="p-4 flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">
-                        {produit.nom}
-                      </h3>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {produit.description}
-                    </p>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {produit.tags.map(tag => (
-                        <span key={tag} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                          {tag}
+                  <div className="md:w-2/3 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xl font-semibold text-gray-900">{produit.nom}</h3>
+                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                          {produit.marque_nom || 'Marque inconnue'}
                         </span>
-                      ))}
-                    </div>
-
-                    {/* Rating et reviews */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <FiStar
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.floor(produit.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
                       </div>
-                      <span className="text-sm text-gray-600">
-                        {produit.rating} ({produit.reviews} avis)
-                      </span>
-                    </div>
-
-                    {/* Prix */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-2xl font-bold text-[#2E7D32]">
-                        {formatPrix(produit.prix)}
-                      </span>
-                      {produit.prixOriginal && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {formatPrix(produit.prixOriginal)}
+                      <div className="flex items-center mb-3">
+                        <div className="flex items-center">
+                          <FiStar className="text-yellow-400 fill-current" />
+                          <span className="ml-1 text-gray-700 font-medium">{produit.rating}</span>
+                          <span className="ml-1 text-gray-500 text-sm">({produit.reviews_count} avis)</span>
+                        </div>
+                        <span className="ml-4 text-sm text-green-600 font-medium">
+                          {produit.categories_produits?.types_agriculture?.nom}
                         </span>
+                      </div>
+                      <div className="space-y-2 mb-4">
+                        {produit.distance_km && (
+                          <div className="flex items-center text-gray-600">
+                            <FiMapPin className="mr-2" />
+                            <span className="text-sm">{produit.distance_km} km (de vous)</span>
+                          </div>
+                        )}
+                        {produit.puissance && (
+                          <div className="flex items-center text-gray-600">
+                            <FiZap className="mr-2" />
+                            <span className="text-sm">{produit.puissance} Puissance</span>
+                          </div>
+                        )}
+                        {produit.installations && (
+                          <div className="flex items-center text-gray-600">
+                            <FiUsers className="mr-2" />
+                            <span className="text-sm">{produit.installations} installations</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-gray-600 text-sm mb-4">{produit.description}</p>
+                      {produit.tags && produit.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {produit.tags.map((tag, index) => (
+                            <span key={index} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
-
-                    {/* Stock */}
-                    <div className="mb-4">
-                      <span className={`text-sm ${
-                        produit.stock > 5 ? 'text-green-600' : 
-                        produit.stock > 0 ? 'text-orange-600' : 'text-red-600'
-                      }`}>
-                        {produit.stock > 0 ? `${produit.stock} en stock` : 'Rupture de stock'}
-                      </span>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-2xl font-bold text-gray-900">{formatPrice(produit.prix)}</div>
+                        <div className="text-sm text-gray-500">(PRIX NET)</div>
+                        {produit.economie && (
+                          <div className="text-green-600 font-medium">{formatPrice(produit.economie)} d'économies</div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        {produit.prix_original && (
+                          <div className="text-gray-500 text-sm line-through">{formatPrice(produit.prix_original)}</div>
+                        )}
+                        <div className="text-gray-400 text-xs">(PAIEMENT MENSUEL DISPONIBLE)</div>
+                        <button 
+                          onClick={() => router.push(`/produit/${produit.id}`)}
+                          className="mt-2 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          Voir les détails
+                        </button>
+                      </div>
                     </div>
-
-                    {/* Bouton d'achat */}
-                    <button
-                      onClick={() => ajouterAuPanier(produit)}
-                      disabled={produit.stock === 0}
-                      className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-colors ${
-                        produit.stock > 0
-                          ? 'bg-[#2E7D32] text-white hover:bg-[#1B5E20]'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
-                    >
-                      <FiShoppingCart />
-                      {produit.stock > 0 ? 'Ajouter au panier' : 'Indisponible'}
-                    </button>
                   </div>
                 </div>
               ))}
             </div>
+          )}
 
-            {/* Message si aucun produit */}
-            {produitsTriés.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">
-                  Aucun produit trouvé pour votre recherche.
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Section avantages */}
-        <section className="bg-white py-16">
-          <div className="container-custom">
-            <h2 className="text-3xl font-bold text-center mb-12">Pourquoi choisir SAFEM ?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="bg-[#2E7D32] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FiTruck size={24} />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Livraison Rapide</h3>
-                <p className="text-gray-600">
-                  Livraison gratuite dès 500 000 FCFA partout au Cameroun
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="bg-[#2E7D32] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FiShield size={24} />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Garantie Qualité</h3>
-                <p className="text-gray-600">
-                  Tous nos produits sont garantis et certifiés
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="bg-[#2E7D32] text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FiRefreshCw size={24} />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">SAV Professionnel</h3>
-                <p className="text-gray-600">
-                  Service après-vente et maintenance assurés
-                </p>
-              </div>
+          {/* Section d'économies */}
+          <div className="mt-8 bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-8 text-white relative overflow-hidden">
+            <div className="relative z-10">
+              <h2 className="text-3xl font-bold mb-2">Demander un Devis pour votre exploitation</h2>
+              <p className="text-xl mb-4">Commencez dès maintenant !</p>
+              <button className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Découvrir les offres
+              </button>
+            </div>
+            <div className="absolute right-0 top-0 w-1/2 h-full">
+              <img 
+                src="/api/placeholder/400/200" 
+                alt="Matériel agricole" 
+                className="w-full h-full object-cover opacity-30"
+              />
             </div>
           </div>
-        </section>
-      </main>
-    </>
+        </div>
+      </div>
+    </MainLayout>
   );
 };
 

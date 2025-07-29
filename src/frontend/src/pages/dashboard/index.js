@@ -4,10 +4,11 @@ import ModernDashboardLayout from '../../layouts/ModernDashboardLayout';
 import ModernDashboardOverview from '../../components/dashboard/ModernDashboardOverview';
 import ModernHarvestModule from '../../components/dashboard/ModernHarvestModule';
 import SalesModule from '../../components/dashboard/SalesModule';
+import CaisseModule from '../../components/dashboard/CaisseModule';
+import BoutiqueModule from '../../components/dashboard/BoutiqueModule';
 import ReportsModule from '../../components/dashboard/ReportsModule';
 import TeamModule from '../../components/dashboard/TeamModule';
 import OperationsModule from '../../components/dashboard/OperationsModule';
-import CaisseModule from '../../components/dashboard/CaisseModule';
 import useDashboard from '../../hooks/useDashboard';
 
 export default function Dashboard() {
@@ -86,6 +87,8 @@ export default function Dashboard() {
         );
       case 'caisse':
         return <CaisseModule />;
+      case 'boutique':
+        return <BoutiqueModule />;
       case 'reports':
         return <ReportsModule data={dashboardData} />;
       case 'team':

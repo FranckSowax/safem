@@ -22,6 +22,7 @@ const navigation = [
   { name: 'Récoltes', href: '#', key: 'harvest', icon: ChartBarIcon },
   { name: 'Ventes', href: '#', key: 'sales', icon: ShoppingCartIcon },
   { name: 'Caisse', href: '#', key: 'caisse', icon: CurrencyDollarIcon },
+  { name: 'Boutique Pro', href: '#', key: 'boutique', icon: ShoppingCartIcon },
   { name: 'Rapports', href: '#', key: 'reports', icon: DocumentReportIcon },
   { name: 'Équipe', href: '#', key: 'team', icon: UserGroupIcon },
   { name: 'Opérations', href: '#', key: 'operations', icon: CogIcon },
