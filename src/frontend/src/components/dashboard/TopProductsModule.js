@@ -115,7 +115,7 @@ const TopProductsModule = ({ period = '30d', limit = 5 }) => {
         ) : products.length > 0 ? (
           products.map((product, index) => (
             <div
-              key={product.product_id || index}
+              key={`${product.product_id}-${index}`}
               className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center space-x-4">

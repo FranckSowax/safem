@@ -16,7 +16,7 @@ import {
   Users,
   Calendar,
   Zap,
-  Leaf,
+  Feather,
   Settings,
   Info
 } from 'react-feather';
@@ -371,7 +371,7 @@ const FiletAntiInsectes = () => {
               {/* Utilisations recommandées */}
               <div className="bg-white rounded-2xl p-8 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
-                  <Leaf className="text-green-600" size={24} />
+                  <Feather className="text-green-600" size={24} />
                   <h2 className="text-2xl font-bold text-gray-900">Utilisations Recommandées</h2>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -382,7 +382,7 @@ const FiletAntiInsectes = () => {
                     'Cultures sensibles'
                   ].map((usage, index) => (
                     <div key={index} className="text-center p-4 bg-green-50 rounded-xl">
-                      <Leaf className="mx-auto mb-2 text-green-600" size={20} />
+                      <Feather className="mx-auto mb-2 text-green-600" size={20} />
                       <div className="text-sm font-medium text-gray-900">{usage}</div>
                     </div>
                   ))}

@@ -1,4 +1,4 @@
-import supabase from './supabaseClient';
+import { supabase, testSupabaseConnection } from '../lib/supabaseClient';
 import SalesService from './salesService';
 
 /**
@@ -12,6 +12,13 @@ export class DashboardService {
    */
   static async getDashboardData() {
     try {
+      // Tester la connexion Supabase avant de faire les requêtes
+      const connectionTest = await testSupabaseConnection();
+      if (!connectionTest.success) {
+        console.warn('⚠️ Connexion Supabase échouée, utilisation des données de fallback');
+        return this.getFallbackData();
+      }
+
       const [
         todaySales,
         recentSales,
