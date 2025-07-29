@@ -23,14 +23,6 @@ export default function MyApp({ Component, pageProps }) {
         <meta property="og:url" content="https://safem.ga" />
         <meta property="og:image" content="/images/vegetables.jpg" />
         <link rel="canonical" href="https://safem.ga" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width" />
-        <meta name="theme-color" content="#2E7D32" />
-
-        <link rel="manifest" href="/manifest.json" />
       </Head>
       <Component {...pageProps} />
       

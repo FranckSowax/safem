@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import MainLayout from '../layouts/MainLayout';
 import { FiShoppingCart, FiPlus, FiMinus, FiTrash2, FiArrowLeft, FiCheck, FiX, FiMapPin, FiNavigation } from 'react-icons/fi';
 import productOrdersService from '../services/productOrdersService';
+import InteractiveMap from '../components/InteractiveMap';
 
 // Fonction pour formater le prix
 const formatPrice = (price) => {
@@ -119,6 +120,16 @@ const CartPage = () => {
         maximumAge: 300000
       }
     );
+  };
+
+  // Fonction pour gérer les changements de position depuis la carte
+  const handleLocationChange = (newLocation) => {
+    setLocation({
+      latitude: newLocation.latitude,
+      longitude: newLocation.longitude,
+      address: newLocation.address
+    });
+    setLocationError(null);
   };
 
   // Fonctions de gestion du panier
@@ -479,14 +490,30 @@ const CartPage = () => {
                         </div>
                       )}
                       
-                      {/* Carte simple avec coordonnées */}
-                      {location.latitude && location.longitude && (
-                        <div className="bg-white rounded-lg border border-gray-300 p-4">
-                          <div className="flex items-start space-x-3">
-                            <FiMapPin className="text-green-600 mt-1 flex-shrink-0" />
+                      {/* Carte interactive Google Maps */}
+                      <div className="mb-4">
+                        <InteractiveMap
+                          latitude={location.latitude}
+                          longitude={location.longitude}
+                          address={location.address}
+                          onLocationChange={handleLocationChange}
+                          height="300px"
+                          showControls={true}
+                        />
+                      </div>
+                      
+                      {/* Instructions pour la carte */}
+                      {!location.latitude && (
+                        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="flex items-start space-x-2">
+                            <FiMapPin className="text-blue-600 mt-0.5 flex-shrink-0" size={16} />
                             <div>
-                              <p className="text-sm font-medium text-gray-900">Position détectée</p>
-                              <p className="text-sm text-gray-600">{location.address}</p>
+                              <p className="text-sm font-medium text-blue-900">Comment utiliser la carte :</p>
+                              <ul className="text-xs text-blue-700 mt-1 space-y-1">
+                                <li>• Cliquez sur le bouton "Ma position" pour vous géolocaliser</li>
+                                <li>• Ou cliquez directement sur la carte pour choisir votre position</li>
+                                <li>• La position sera utilisée pour calculer la livraison</li>
+                              </ul>
                             </div>
                           </div>
                         </div>

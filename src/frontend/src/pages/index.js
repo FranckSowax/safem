@@ -150,7 +150,7 @@ export default function HomePage() {
         <title>SAFEM - Leader de l'Agriculture Durable au Gabon</title>
         <meta name="description" content="SAFEM - Votre partenaire de confiance pour des produits frais de qualité supérieure, cultivés avec passion au cœur du Gabon" />
         <link rel="icon" href="/favicon.ico" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
         <style>{`
           .gallery-container {
             overflow-x: auto;

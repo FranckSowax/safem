@@ -8,6 +8,9 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true, // Active la compression gzip pour toutes les ressources
   poweredByHeader: false, // Supprime l'en-tête X-Powered-By pour la sécurité
+  
+  // Optimisations pour réduire les warnings
+  swcMinify: true, // Utilise SWC pour la minification (plus rapide)
   images: {
     domains: [
       'localhost',
